@@ -50,7 +50,7 @@ def wait_until(runTime, action=None):
         sleep(60)
         
     while startTime > datetime.datetime.today().time():
-        if str(datetime.datetime.today().time())[:5] == '00:00':
+        if str(datetime.datetime.today().time())[3:5] == '00':
             return action
         sleep(30)
     return action

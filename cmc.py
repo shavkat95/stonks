@@ -26,12 +26,33 @@ try:
 except (ConnectionError, Timeout, TooManyRedirects) as e:
   print(e)
   
-print(data.keys())
+# print(data.keys())
 
-coins = ['Bitcoin', 'Ethereum', 'BNB', 'Solana', 'XRP', 'Dogecoin', 'Toncoin', 'Cardano', 'Shiba Inu']
+slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba-inu', 'avalanche', 'tron', 'polkadot-new', 'bitcoin-cash', 'chainlink', 'near-protocol']
 
-for dat in data['data']:
-  print(dat['name'])
+
+
+def get_ids(ids=[]):
+  for slug in slugs:
+    for dat in data['data']:
+      if dat['slug']==slug:
+        ids.append(dat['id'])
+        break
+  print('ids:')
+  print(ids)
+  print('slugs:')
+  print(slugs)
+  return slugs
+
+
+    
+ids = get_ids()
+
+# print(data['data'][0])
+
+
+  
+  
 
 
 # print(data['data'][1])
