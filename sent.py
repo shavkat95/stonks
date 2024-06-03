@@ -1,7 +1,7 @@
-# from transformers import pipeline
-# sentiment_pipeline = pipeline(model="cardiffnlp/twitter-roberta-base-sentiment")
-# data = ["This is definitely something to check out.", "I hate you"]
-# print(sentiment_pipeline(data))
+# pip install -q transformers
+from transformers import pipeline
+sentiment_pipeline = pipeline(model="cardiffnlp/twitter-roberta-base-sentiment")
+
 
 
 
@@ -52,6 +52,11 @@ with sync_playwright() as p:
 
 
 print(tweets)
+
+# data = ["This is definitely something to check out.", "I hate you"]
+data = tweets
+print('\n \n \n')
+print(sentiment_pipeline(data))
 
 
 

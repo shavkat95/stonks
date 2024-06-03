@@ -6,6 +6,16 @@ con = sqlite3.connect("my.db")
 cur = con.cursor()
 
 
+import time
+
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+import selenium
+from selenium.webdriver.common.by import By
+driver = webdriver.Chrome()
+
+SCROLL_PAUSE_TIME = 2
+
 
 
 
@@ -15,23 +25,26 @@ def init_db():
     return
 
 def create_tables():
+    # also deletes 'the_do'-table
     sql_statements = [ 
-        """CREATE TABLE IF NOT EXISTS projects (
+        """DROP TABLE IF EXISTS the_do;""",
+        """CREATE TABLE the_do (
                 id INTEGER PRIMARY KEY, 
-                name text NOT NULL, 
-                begin_date TEXT, 
-                end_date TEXT
+                BTC_R VARCHAR(65535), 
+                some_numeric smallint, 
+                some_bigger_numeric int
         );""",
-        """CREATE TABLE IF NOT EXISTS tasks (
-                id INTEGER PRIMARY KEY, 
-                name TEXT NOT NULL, 
-                priority INT, 
-                project_id INT NOT NULL, 
-                status_id INT NOT NULL, 
-                begin_date TEXT NOT NULL, 
-                end_date TEXT NOT NULL, 
-                FOREIGN KEY (project_id) REFERENCES projects (id)
-        );"""]
+        # """CREATE TABLE IF NOT EXISTS tasks (
+        #         id INTEGER PRIMARY KEY, 
+        #         name TEXT NOT NULL, 
+        #         priority INT, 
+        #         project_id INT NOT NULL, 
+        #         status_id INT NOT NULL, 
+        #         begin_date TEXT NOT NULL, 
+        #         end_date TEXT NOT NULL, 
+        #         FOREIGN KEY (project_id) REFERENCES projects (id)
+        # );"""
+        ]
 
     # create a database connection
     try:
@@ -65,5 +78,95 @@ def create_sqlite_database(filename):
             conn.close()
 
 
+
+
+def scrape_reddit_btc():
+    result = ''
+    driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
+
+    driver.implicitly_wait(3)
+    time.sleep(3) # Sleep for 3 seconds
+
+
+    i = 1
+    while True:
+        try:
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
+        except selenium.common.exceptions.NoSuchElementException as e:
+            print('\n bad bad at - '+str(i))
+            break
+        i+=1
+        result+="\n "+my_element.text + " \n "
+        
+    # driver.implicitly_wait(1)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # Wait to load page
+    time.sleep(SCROLL_PAUSE_TIME)
+
+
+    i = 1
+    while True:
+        try:
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
+        except selenium.common.exceptions.NoSuchElementException as e:
+            print('\n bad bad at - '+str(i))
+            break
+        i+=1
+        result+="\n "+my_element.text + " \n "
+
+    # driver.implicitly_wait(1)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # Wait to load page
+    time.sleep(SCROLL_PAUSE_TIME)
+
+
+    i = 1
+    while True:
+        try:
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
+        except selenium.common.exceptions.NoSuchElementException as e:
+            print('\n bad bad at - '+str(i))
+            break
+        i+=1
+        result+="\n "+my_element.text + " \n "
+        
+        
+        
+    # driver.implicitly_wait(1)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # Wait to load page
+    time.sleep(SCROLL_PAUSE_TIME)
+
+
+        
+    while True:
+        try:
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
+        except selenium.common.exceptions.NoSuchElementException as e:
+            print('\n bad bad at - '+str(i))
+            break
+        i+=1
+        result+="\n "+my_element.text + " \n "
+        
+
+
+    driver.quit()
+    return result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     create_sqlite_database(db_filename)
+    print(scrape_reddit_btc())
