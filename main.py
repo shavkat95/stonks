@@ -3,6 +3,8 @@ import datetime
 from time import sleep
 import pandas as pd
 import csv
+from scrape_for_btc import scrape_reddit_btc
+import sqlite3
 
 def act(x):
     return x+10
@@ -26,7 +28,7 @@ def wait_until(runTime, action=None):
             if str(datetime.datetime.today().time())[3] == '0':
                 return action
             sleep(60)
-        return action
+        return action()
     
     # 50
     if (datetime.datetime.now() + datetime.timedelta(minutes = 50)).time() < startTime:
@@ -57,13 +59,34 @@ def wait_until(runTime, action=None):
         sleep(60)
     return action
 
+
+
+def run_sql_statements(statements):
+    try:
+        with sqlite3.connect("my.db") as conn:
+            cursor = conn.cursor()
+            for statement in statements:
+                cursor.execute(statement)
+            conn.commit()
+    except sqlite3.Error as e:
+        print(e)
+        
+        
+
 def get_row(nh):
+    print('getting row')
     if nh == '00:00':
         date = datetime.datetime.today() + datetime.timedelta(days=1)
     else:
         date = datetime.datetime.today()
     id = str(date)+' - '+str(nh)
-    return [id]
+    btc_reddit_headlines = scrape_reddit_btc()
+    sql_statements = [ 
+        f"""INSERT INTO table_name (id, BTC_R)
+            VALUES ({id},{btc_reddit_headlines});""",
+        ]
+    run_sql_statements(sql_statements)
+    return [id, btc_reddit_headlines]
 
 def wait_next_full_hour(nh = None, action=None):
     if nh==None:
@@ -81,7 +104,7 @@ def wait_next_full_hour(nh = None, action=None):
 
 while True:
     nh = get_next_full_hour()
-    wait_next_full_hour(nh = nh, action=get_row(nh=nh))
+    wait_next_full_hour(nh = nh, action=get_row)
     
     
 

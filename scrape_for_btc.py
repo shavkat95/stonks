@@ -2,9 +2,6 @@ import sqlite3
 
 db_filename = "my.db"
 
-con = sqlite3.connect("my.db")
-cur = con.cursor()
-
 
 import time
 
@@ -12,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 import selenium
 from selenium.webdriver.common.by import By
-driver = webdriver.Chrome()
+
 
 SCROLL_PAUSE_TIME = 2
 
@@ -24,12 +21,16 @@ def init_db():
     create_tables()
     return
 
+
+
+    
+
 def create_tables():
     # also deletes 'the_do'-table
     sql_statements = [ 
         """DROP TABLE IF EXISTS the_do;""",
         """CREATE TABLE the_do (
-                id INTEGER PRIMARY KEY, 
+                id TEXT PRIMARY KEY, 
                 BTC_R VARCHAR(65535), 
                 some_numeric smallint, 
                 some_bigger_numeric int
@@ -81,6 +82,7 @@ def create_sqlite_database(filename):
 
 
 def scrape_reddit_btc():
+    driver = webdriver.Chrome()
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
@@ -253,6 +255,6 @@ def scrape_reddit_btc():
 
 
 
-if __name__ == '__main__':
-    create_sqlite_database(db_filename)
-    print(scrape_reddit_btc())
+# if __name__ == '__main__':
+#     create_sqlite_database(db_filename)
+#     print(scrape_reddit_btc())
