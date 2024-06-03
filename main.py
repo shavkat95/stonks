@@ -1,3 +1,11 @@
+# nohup python3 main.py > output.log &
+# ps -ef | grep python
+# pkill -9 -f main.py
+
+
+
+
+
 from datetime import time
 import datetime
 from time import sleep
