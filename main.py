@@ -23,7 +23,7 @@ def wait_until(runTime, action=None):
     if (datetime.datetime.now() + datetime.timedelta(minutes = 59)).time() < startTime:
         sleep(3540)
         while startTime > datetime.datetime.today().time():
-            if str(datetime.datetime.today().time())[3:5] == '00':
+            if str(datetime.datetime.today().time())[3] == '0':
                 return action
             sleep(60)
         return action
@@ -52,7 +52,7 @@ def wait_until(runTime, action=None):
         sleep(60)
         
     while startTime > datetime.datetime.today().time():
-        if str(datetime.datetime.today().time())[3:5] == '00':
+        if str(datetime.datetime.today().time())[3] == '0':
             return action
         sleep(60)
     return action
