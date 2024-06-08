@@ -14,7 +14,7 @@ from selenium.webdriver import EdgeOptions
 
 
 options = EdgeOptions()
-options.binary_location = "path/to/edgedriver_linux64/msedgedriver"    #chrome binary location specified here
+options.binary_location = "./path/to/edgedriver_linux64/msedgedriver"    #chrome binary location specified here
 options.add_argument("--start-maximized") #open Browser in maximized mode
 options.add_argument("--no-sandbox") #bypass OS security model
 options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
@@ -108,7 +108,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Edge("path/to/edgedriver_linux64/msedgedriver", options=options)
+    driver = webdriver.Edge("./path/to/edgedriver_linux64/msedgedriver", options=options)
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
