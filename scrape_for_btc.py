@@ -9,6 +9,8 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 import selenium
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+cService = webdriver.ChromeService(executable_path='./path/to/chromedriver_win32/chromedriver')
 
 
 SCROLL_PAUSE_TIME = 2
@@ -93,7 +95,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(service = cService)
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
