@@ -4,12 +4,14 @@ db_filename = "my.db"
 
 
 import time
-
+import os
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver import EdgeOptions
+
+os.environ['PATH'] += "/home/banksy/Documents/stonks/stonks/path/to/edgedriver_linux64/msedgedriver"
 
 
 
