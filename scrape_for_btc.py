@@ -19,8 +19,11 @@ options.binary_location = "path/to/chromedriver_linux64/chromedriver"    #chrome
 options.add_argument("--start-maximized") #open Browser in maximized mode
 options.add_argument("--no-sandbox") #bypass OS security model
 options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
-options.add_experimental_option("excludeSwitches", ["enable-automation"])
-options.add_experimental_option('useAutomationExtension', False)
+options.add_argument("--disable-extensions")
+
+# options.add_experimental_option("excludeSwitches", ["enable-automation"])
+# options.add_experimental_option('useAutomationExtension', False)
+
 
 
 SCROLL_PAUSE_TIME = 2
