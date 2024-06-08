@@ -20,7 +20,7 @@ options.binary_location = "path/to/edgedriver_linux64/msedgedriver"    #chrome b
 options.add_argument("--start-maximized") #open Browser in maximized mode
 options.add_argument("--no-sandbox") #bypass OS security model
 options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
-options.set_experimental_option("useAutomationExtension", False)
+options.add_experimental_option("useAutomationExtension", False)
 # options.add_argument('--user-data-dir=~/.config/google-chrome')
 
 # options.add_experimental_option("excludeSwitches", ["enable-automation"])
