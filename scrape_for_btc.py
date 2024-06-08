@@ -10,6 +10,7 @@ from selenium import webdriver
 import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.service import Service
 
 # os.environ['PATH'] += "/home/banksy/Documents/stonks/stonks/path/to/edgedriver_linux64/msedgedriver"
 
@@ -111,7 +112,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Chrome(service = webdriver.ChromeService(executable_path='path/to/chromedriver_linux64/chromedriver'), options=options)
+    driver = webdriver.Chrome(service = Service(executable_path='path/to/chromedriver_linux64/chromedriver'), options=options)
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
