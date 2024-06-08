@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-cService = webdriver.ChromeService(executable_path='./path/to/chromedriver_win32/chromedriver')
+cService = webdriver.ChromeService(executable_path='./path/to/chromedriver_linux64/chromedriver')
 
 
 SCROLL_PAUSE_TIME = 2
