@@ -79,10 +79,21 @@ def create_sqlite_database(filename):
             conn.close()
 
 
+def get_search_data(kw):
+    # return list with data to keyword search
+    # posts sentiment info last 2 hours (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info (posts count, comments count, votes count)
+    # active posts sentiment info last 12 hours (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info (posts count, comments count, votes count)
+    output = []
+    driver = webdriver.Firefox()
+    driver.get(f'https://www.reddit.com/search/?q={kw}&sort=new')
+    time.sleep(SCROLL_PAUSE_TIME) # Sleep for 3 seconds
+    
+    return output
+
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Chrome()
+    driver = webdriver.Edge()
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
@@ -92,111 +103,56 @@ def scrape_reddit_btc():
     i = 1
     while True:
         try:
-            
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -comments:"+str(comments.text)+" \n "
-        
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
-
-    while True:
-        try:
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            
-            
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -comments:"+str(comments.text)+" \n "
-
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
-
-    while True:
-        try:
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
+            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
+            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         except selenium.common.exceptions.NoSuchElementException as e:
             print('\n bad bad at - '+str(i))
             break
         i+=1
         result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
         
-        
-        
     # driver.implicitly_wait(1)
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     # Wait to load page
     time.sleep(SCROLL_PAUSE_TIME)
 
-
-        
     while True:
         try:
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
-
-
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
-
-
-        
-    while True:
-        try:
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
+            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
+            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         except selenium.common.exceptions.NoSuchElementException as e:
             print('\n bad bad at - '+str(i))
             break
         i+=1
         result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
         
-        
-        
     # driver.implicitly_wait(1)
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     # Wait to load page
     time.sleep(SCROLL_PAUSE_TIME)
 
-
-        
     while True:
         try:
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
+            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
+            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         except selenium.common.exceptions.NoSuchElementException as e:
             print('\n bad bad at - '+str(i))
             break
         i+=1
         result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
         
-        
-        
-        
     # driver.implicitly_wait(1)
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     # Wait to load page
@@ -206,18 +162,38 @@ def scrape_reddit_btc():
         
     while True:
         try:
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
+            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
+            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         except selenium.common.exceptions.NoSuchElementException as e:
             print('\n bad bad at - '+str(i))
             break
         i+=1
         result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
         
+    # driver.implicitly_wait(1)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # Wait to load page
+    time.sleep(SCROLL_PAUSE_TIME)
+
+
         
-        
-        
+    while True:
+        try:
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
+            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
+            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+        except selenium.common.exceptions.NoSuchElementException as e:
+            print('\n bad bad at - '+str(i))
+            break
+        i+=1
+        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
         
     # driver.implicitly_wait(1)
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -228,9 +204,54 @@ def scrape_reddit_btc():
         
     while True:
         try:
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a")
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/dsa-transparency-modal-provider/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
+            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
+            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+        except selenium.common.exceptions.NoSuchElementException as e:
+            print('\n bad bad at - '+str(i))
+            break
+        i+=1
+        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
+        
+    # driver.implicitly_wait(1)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # Wait to load page
+    time.sleep(SCROLL_PAUSE_TIME)
+
+
+        
+    while True:
+        try:
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
+            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
+            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+        except selenium.common.exceptions.NoSuchElementException as e:
+            print('\n bad bad at - '+str(i))
+            break
+        i+=1
+        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
+        
+    # driver.implicitly_wait(1)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # Wait to load page
+    time.sleep(SCROLL_PAUSE_TIME)
+
+
+        
+    while True:
+        try:
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
+            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
+            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
+            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         except selenium.common.exceptions.NoSuchElementException as e:
             print('\n bad bad at - '+str(i))
             break
