@@ -102,7 +102,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Edge(options=options)
+    driver = webdriver.Edge(options=options, executable_path="path/to/edgedriver_linux64/msedgedriver")
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
