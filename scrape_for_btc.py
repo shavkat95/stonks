@@ -24,6 +24,7 @@ options.add_argument("--no-sandbox") #bypass OS security model
 options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
 options.add_experimental_option("useAutomationExtension", False)
 options.add_argument('--remote-debugging-pipe')
+options.add_argument("--headless")
 # options.add_argument('--user-data-dir=~/.config/google-chrome')
 
 # options.add_experimental_option("excludeSwitches", ["enable-automation"])
