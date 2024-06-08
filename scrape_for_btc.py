@@ -10,14 +10,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-
-options = Options()
-options.binary_location = "path/to/edgedriver_linux64/msedgedriver"    #chrome binary location specified here
-options.add_argument("--start-maximized") #open Browser in maximized mode
-options.add_argument("--no-sandbox") #bypass OS security model
-options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
-options.add_experimental_option("excludeSwitches", ["enable-automation"])
-options.add_experimental_option('useAutomationExtension', False)
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 SCROLL_PAUSE_TIME = 2
@@ -102,7 +96,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Edge(options=options, executable_path="path/to/edgedriver_linux64/msedgedriver")
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
