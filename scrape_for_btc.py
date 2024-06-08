@@ -12,6 +12,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+import pyspark
+sc=pyspark.SparkContext()
+sc.setSystemProperty("webdriver.chrome.driver", "path/to/chromedriver_linux64/chromedriver")
 
 
 options = ChromeOptions()
