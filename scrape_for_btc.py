@@ -11,6 +11,14 @@ import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
+options = Options()
+options.binary_location = "C:\\path\\to\\chrome.exe"    #chrome binary location specified here
+options.add_argument("--start-maximized") #open Browser in maximized mode
+options.add_argument("--no-sandbox") #bypass OS security model
+options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_experimental_option('useAutomationExtension', False)
+
 
 SCROLL_PAUSE_TIME = 2
 
@@ -94,7 +102,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=options, executable_path=r'./path/to/chromedriver_linux64/chromedriver')
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
