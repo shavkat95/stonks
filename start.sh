@@ -1,3 +1,3 @@
 #!/bin/sh
-python scrape_for_btc.py
+python3 scrape_for_btc.py
 
