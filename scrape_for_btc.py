@@ -9,14 +9,14 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 import selenium
 from selenium.webdriver.common.by import By
-from selenium.webdriver import ChromeOptions
+from selenium.webdriver import EdgeOptions
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
 
-options = ChromeOptions()
-options.binary_location = "path/to/chromedriver_linux64/chromedriver"    #chrome binary location specified here
+options = EdgeOptions()
+options.binary_location = "path/to/edgedriver_linux64/msedgedriver"    #chrome binary location specified here
 options.add_argument("--start-maximized") #open Browser in maximized mode
 options.add_argument("--no-sandbox") #bypass OS security model
 options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
@@ -110,7 +110,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Edge()
+    driver = webdriver.Edge(options=options)
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
