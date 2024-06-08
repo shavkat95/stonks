@@ -105,7 +105,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    driver = webdriver.Chrome(options=options)
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
