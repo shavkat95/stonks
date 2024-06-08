@@ -12,7 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
 options = Options()
-# options.binary_location = "/usr/local/bin/chromedriver"    #chrome binary location specified here
+options.binary_location = "path/to/edgedriver_linux64/msedgedriver"    #chrome binary location specified here
 options.add_argument("--start-maximized") #open Browser in maximized mode
 options.add_argument("--no-sandbox") #bypass OS security model
 options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
