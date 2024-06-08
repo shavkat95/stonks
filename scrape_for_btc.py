@@ -9,12 +9,12 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 import selenium
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import ChromeOptions
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-options = Options()
+options = ChromeOptions()
 options.binary_location = "path/to/chromedriver_linux64/chromedriver"    #chrome binary location specified here
 options.add_argument("--start-maximized") #open Browser in maximized mode
 options.add_argument("--no-sandbox") #bypass OS security model
