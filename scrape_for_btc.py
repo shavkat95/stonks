@@ -12,9 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-import pyspark
-sc=pyspark.SparkContext()
-sc.setSystemProperty("webdriver.chrome.driver", "path/to/chromedriver_linux64/chromedriver")
+
 
 
 options = ChromeOptions()
@@ -112,7 +110,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Firefox()
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
