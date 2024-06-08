@@ -19,10 +19,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 options = ChromeOptions()
 # options.binary_location = "./path/to/edgedriver_linux64/msedgedriver"    #chrome binary location specified here
-# options.add_argument("--start-maximized") #open Browser in maximized mode
-# options.add_argument("--no-sandbox") #bypass OS security model
-# options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
-# options.add_experimental_option("useAutomationExtension", False)
+options.add_argument("--start-maximized") #open Browser in maximized mode
+options.add_argument("--no-sandbox") #bypass OS security model
+options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
+options.add_experimental_option("useAutomationExtension", False)
 options.add_argument('--remote-debugging-pipe')
 # options.add_argument('--user-data-dir=~/.config/google-chrome')
 
