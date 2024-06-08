@@ -6,21 +6,21 @@ db_filename = "my.db"
 import time
 import os
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support.ui import WebDriverWait
 import selenium
 from selenium.webdriver.common.by import By
-from selenium.webdriver import EdgeOptions
+from selenium.webdriver import ChromeOptions
 
-os.environ['PATH'] += "/home/banksy/Documents/stonks/stonks/path/to/edgedriver_linux64/msedgedriver"
+# os.environ['PATH'] += "/home/banksy/Documents/stonks/stonks/path/to/edgedriver_linux64/msedgedriver"
 
 
 
-options = EdgeOptions()
-options.binary_location = "./path/to/edgedriver_linux64/msedgedriver"    #chrome binary location specified here
-options.add_argument("--start-maximized") #open Browser in maximized mode
-options.add_argument("--no-sandbox") #bypass OS security model
-options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
-options.add_experimental_option("useAutomationExtension", False)
+options = ChromeOptions()
+# options.binary_location = "./path/to/edgedriver_linux64/msedgedriver"    #chrome binary location specified here
+# options.add_argument("--start-maximized") #open Browser in maximized mode
+# options.add_argument("--no-sandbox") #bypass OS security model
+# options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
+# options.add_experimental_option("useAutomationExtension", False)
 options.add_argument('--remote-debugging-pipe')
 # options.add_argument('--user-data-dir=~/.config/google-chrome')
 
@@ -111,7 +111,7 @@ def get_search_data(kw):
 
 
 def scrape_reddit_btc():
-    driver = webdriver.Edge("./path/to/edgedriver_linux64/msedgedriver", options=options)
+    driver = webdriver.Chrome(options=options)
     result = ''
     driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
 
