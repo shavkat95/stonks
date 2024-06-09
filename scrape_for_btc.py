@@ -8,7 +8,7 @@ from playwright.sync_api import sync_playwright
 import config
 # Display browser window for debugging?
 if os.name=="posix":
-    print('as.name == posix -> headless')
+    print('os.name == posix -> headless')
     headless = True
 else:
     headless = False
