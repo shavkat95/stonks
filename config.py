@@ -1,3 +1,3 @@
 dic = dict(
-    debug = True,
+    debug = False,
 )
