@@ -7,13 +7,14 @@ import os
 from playwright.sync_api import sync_playwright
 import config
 # Display browser window for debugging?
-headless = True
+if os.name=="posix":
+    print('as.name == posix -> headless')
+    headless = True
+else:
+    headless = False
 # debug = bool(config.dic['debug'])
 # os.environ['PATH'] += "/home/banksy/.local/bin"
 SCROLL_PAUSE_TIME = 1
-
-print(os.name)
-time.sleep(100)
 
 def init_db():
     create_tables()
