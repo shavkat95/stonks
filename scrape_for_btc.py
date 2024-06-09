@@ -7,7 +7,7 @@ import os
 from playwright.sync_api import sync_playwright
 import config
 # Display browser window for debugging?
-debug = False
+debug = True
 # debug = bool(config.dic['debug'])
 # os.environ['PATH'] += "/home/banksy/.local/bin"
 SCROLL_PAUSE_TIME = 5
