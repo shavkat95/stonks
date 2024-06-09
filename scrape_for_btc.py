@@ -11,9 +11,15 @@ import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service
+from dotenv import load_dotenv
+load_dotenv()
 # from webdriver_manager.chrome import ChromeDriverManager
 
-# os.environ['PATH'] += "/home/banksy/Documents/stonks/stonks/path/to/edgedriver_linux64/msedgedriver"
+os.environ['PATH'] += "/home/banksy/.local/bin"
+
+# default path for homebrew-installed chromedriver
+CHROMEDRIVER_PATH = os.getenv("CHROMEDRIVER_PATH", default="/usr/local/bin/chromedriver")
+CHROME_BINARY_PATH = os.getenv("CHROME_BINARY_PATH") # specify path where chrome binary is installed, as necessary (see "build.sh")
 
 
 
