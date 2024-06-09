@@ -8,7 +8,7 @@ from playwright.sync_api import sync_playwright
 import config
 # Display browser window for debugging?
 debug = True
-# debug = config.dic['debug']
+# debug = bool(config.dic['debug'])
 # os.environ['PATH'] += "/home/banksy/.local/bin"
 SCROLL_PAUSE_TIME = 5
 
@@ -127,7 +127,6 @@ def scrape_reddit_btc():
         browser = p.chromium.launch(headless = not debug)    
         page = browser.new_page()
         page.goto('https://www.reddit.com/search/?q=bitcoin&sort=new')
-        page.wait_for_load_state("networkidle") 
         result = ''
         
         i = 1
@@ -141,7 +140,6 @@ def scrape_reddit_btc():
                        
             if my_element == False:
                 print('\n bad bad at - '+str(i))
-                i+=1 
                 break
             i+=1
             result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
@@ -154,7 +152,6 @@ def scrape_reddit_btc():
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
-        page.wait_for_load_state("networkidle") 
         time.sleep(SCROLL_PAUSE_TIME)
 
         while True:
@@ -166,7 +163,6 @@ def scrape_reddit_btc():
             votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
             if my_element == False:
                 print('\n bad bad at - '+str(i))
-                i+=1 
                 break
             i+=1
             result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
@@ -179,7 +175,6 @@ def scrape_reddit_btc():
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
-        page.wait_for_load_state("networkidle") 
         time.sleep(SCROLL_PAUSE_TIME)
 
         while True:
@@ -192,7 +187,6 @@ def scrape_reddit_btc():
                        
             if my_element == False:
                 print('\n bad bad at - '+str(i))
-                i+=1 
                 break
             i+=1
             result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
@@ -205,7 +199,6 @@ def scrape_reddit_btc():
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
-        page.wait_for_load_state("networkidle") 
         time.sleep(SCROLL_PAUSE_TIME)
             
         while True:
@@ -217,7 +210,6 @@ def scrape_reddit_btc():
             votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")  
             if my_element == False:
                 print('\n bad bad at - '+str(i))
-                i+=1 
                 break
             i+=1
             result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
@@ -230,7 +222,6 @@ def scrape_reddit_btc():
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
-        page.wait_for_load_state("networkidle") 
         time.sleep(SCROLL_PAUSE_TIME)
             
         while True:
@@ -242,7 +233,6 @@ def scrape_reddit_btc():
             votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
             if my_element == False:
                 print('\n bad bad at - '+str(i))
-                i+=1
                 break
             i+=1
             result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
@@ -255,7 +245,6 @@ def scrape_reddit_btc():
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
-        page.wait_for_load_state("networkidle") 
         time.sleep(SCROLL_PAUSE_TIME)
             
         while True:
@@ -268,7 +257,6 @@ def scrape_reddit_btc():
             
             if my_element == False:
                 print('\n bad bad at - '+str(i))
-                i+=1 
                 break
             i+=1
             result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
@@ -282,7 +270,6 @@ def scrape_reddit_btc():
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
-        page.wait_for_load_state("networkidle") 
         time.sleep(SCROLL_PAUSE_TIME)
             
         while True:
@@ -295,7 +282,6 @@ def scrape_reddit_btc():
             
             if my_element == False:
                 print('\n bad bad at - '+str(i))
-                i+=1 
                 break
             i+=1
             result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
@@ -308,7 +294,6 @@ def scrape_reddit_btc():
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
         page.keyboard.press("PageDown")
-        page.wait_for_load_state("networkidle") 
         time.sleep(SCROLL_PAUSE_TIME)
             
         while True:
@@ -321,7 +306,6 @@ def scrape_reddit_btc():
             
             if my_element == False:
                 print('\n bad bad at - '+str(i))
-                i+=1 
                 break
             i+=1
             result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
