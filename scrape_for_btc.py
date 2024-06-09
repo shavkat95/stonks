@@ -1,56 +1,20 @@
 import sqlite3
-
 db_filename = "my.db"
-
-
 import time
 import os
-from selenium import webdriver
-# from selenium.webdriver.support.ui import WebDriverWait
-import selenium
-from selenium.webdriver.common.by import By
-from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service
-from dotenv import load_dotenv
-load_dotenv()
-# from webdriver_manager.chrome import ChromeDriverManager
-
-os.environ['PATH'] += "/home/banksy/.local/bin"
-
-# default path for homebrew-installed chromedriver
-CHROMEDRIVER_PATH = os.getenv("CHROMEDRIVER_PATH", default="/usr/local/bin/chromedriver")
-CHROME_BINARY_PATH = os.getenv("CHROME_BINARY_PATH") # specify path where chrome binary is installed, as necessary (see "build.sh")
-
-
-
-options = ChromeOptions()
-# options.binary_location = "./path/to/edgedriver_linux64/msedgedriver"    #chrome binary location specified here
-options.add_argument("--start-maximized") #open Browser in maximized mode
-options.add_argument("--no-sandbox") #bypass OS security model
-options.add_argument("--disable-dev-shm-usage") #overcome limited resource problems
-options.add_experimental_option("useAutomationExtension", False)
-options.add_argument('--remote-debugging-pipe')
-options.add_argument("--headless")
-# options.add_argument('--user-data-dir=~/.config/google-chrome')
-
-# options.add_experimental_option("excludeSwitches", ["enable-automation"])
-# options.add_experimental_option('useAutomationExtension', False)
-
-
-
-SCROLL_PAUSE_TIME = 2
-
-
-
-
+# pip install playwright
+# then: python -m playwright install
+from playwright.sync_api import sync_playwright
+import config
+# Display browser window for debugging?
+debug = True
+# debug = config.dic['debug']
+# os.environ['PATH'] += "/home/banksy/.local/bin"
+SCROLL_PAUSE_TIME = 5
 
 def init_db():
     create_tables()
     return
-
-
-
-    
 
 def create_tables():
     # also deletes 'the_do'-table
@@ -85,12 +49,8 @@ def create_tables():
     except sqlite3.Error as e:
         print(e)
 
-
-
-
 def do_the_do():
     return
-
 
 def create_sqlite_database(filename):
     """ create a database connection to an SQLite database """
@@ -104,189 +64,269 @@ def create_sqlite_database(filename):
     finally:
         if conn:
             conn.close()
+            
+            
+def evaluate_one(url, xpath):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless = not debug)    
+        page = browser.new_page()
+        page.goto (url)
+        page.wait_for_load_state("networkidle")
+        extract_tweet_javascript = """
+            try
+            {
+                var xpathExpression = "$PATH";
+                var element = document.evaluate (xpathExpression, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                element = element.textContent;
+            }
+            catch (error)
+            {
+                element = false;
+            }
+            """
+        result = page.evaluate(extract_tweet_javascript.replace("$PATH", str(xpath))) 
+    return result
 
+def evaluate_in_page(page, xpath):
+    # with sync_playwright() as p:
+    # browser = p.chromium.launch(headless = not debug)    
+    # page = browser.new_page()
+    # page.goto (url)
+    # page.wait_for_load_state("networkidle")
+    extract_tweet_javascript = """
+            try
+            {
+                var xpathExpression = "$PATH";
+                var element = document.evaluate (xpathExpression, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                element = element.textContent;
+            }
+            catch (error)
+            {
+                element = false;
+            }
+            """
+    result = page.evaluate(extract_tweet_javascript.replace("$PATH", str(xpath))) 
+    return result
 
 def get_search_data(kw):
     # return list with data to keyword search
     # posts sentiment info last 2 hours (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info (posts count, comments count, votes count)
     # active posts sentiment info last 12 hours (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info (posts count, comments count, votes count)
+    
+    
     output = []
-    driver = webdriver.Firefox()
-    driver.get(f'https://www.reddit.com/search/?q={kw}&sort=new')
-    time.sleep(SCROLL_PAUSE_TIME) # Sleep for 3 seconds
+    # browser = p.chromium.launch (headless = not debug)
+    # driver = webdriver.Firefox()
+    # driver.get(f'https://www.reddit.com/search/?q={kw}&sort=new')
+    # time.sleep(SCROLL_PAUSE_TIME) # Sleep for 3 seconds
     
     return output
 
-
-
 def scrape_reddit_btc():
-    driver = webdriver.Chrome(service = Service(executable_path='path/to/chromedriver_linux64/chromedriver'), options=options)
-    result = ''
-    driver.get('https://www.reddit.com/search/?q=bitcoin&sort=new')
-
-    driver.implicitly_wait(3)
-    time.sleep(SCROLL_PAUSE_TIME) # Sleep for 3 seconds
-    
-    i = 1
-    while True:
-        try:
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless = not debug)    
+        page = browser.new_page()
+        page.goto('https://www.reddit.com/search/?q=bitcoin&sort=new')
+        page.wait_for_load_state("networkidle") 
+        result = ''
+        
+        i = 1
+        while True:
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
-        
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
+            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+                       
+            if my_element == False:
+                print('\n bad bad at - '+str(i))
+                i+=1 
+                break
+            i+=1
+            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
+            if i%5 == 1:
+                page.keyboard.press("PageDown")
+            
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.wait_for_load_state("networkidle") 
+        time.sleep(SCROLL_PAUSE_TIME)
 
-    while True:
-        try:
+        while True:
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
-        
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
+            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+            if my_element == False:
+                print('\n bad bad at - '+str(i))
+                i+=1 
+                break
+            i+=1
+            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
+            if i%5 == 1:
+                page.keyboard.press("PageDown")
+            
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.wait_for_load_state("networkidle") 
+        time.sleep(SCROLL_PAUSE_TIME)
 
-    while True:
-        try:
+        while True:
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
-        
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
+            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+                       
+            if my_element == False:
+                print('\n bad bad at - '+str(i))
+                i+=1 
+                break
+            i+=1
+            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
+            if i%5 == 1:
+                page.keyboard.press("PageDown")
 
-
-        
-    while True:
-        try:
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.wait_for_load_state("networkidle") 
+        time.sleep(SCROLL_PAUSE_TIME)
+            
+        while True:
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
-        
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
-
-
-        
-    while True:
-        try:
+            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")  
+            if my_element == False:
+                print('\n bad bad at - '+str(i))
+                i+=1 
+                break
+            i+=1
+            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
+            if i%5 == 1:
+                page.keyboard.press("PageDown")
+            
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.wait_for_load_state("networkidle") 
+        time.sleep(SCROLL_PAUSE_TIME)
+            
+        while True:
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
-        
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
+            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+            if my_element == False:
+                print('\n bad bad at - '+str(i))
+                i+=1
+                break
+            i+=1
+            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
+            if i%5 == 1:
+                page.keyboard.press("PageDown")
 
-
-        
-    while True:
-        try:
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.wait_for_load_state("networkidle") 
+        time.sleep(SCROLL_PAUSE_TIME)
+            
+        while True:
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
-        
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
+            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+            
+            if my_element == False:
+                print('\n bad bad at - '+str(i))
+                i+=1 
+                break
+            i+=1
+            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
+            if i%5 == 1:
+                page.keyboard.press("PageDown")
 
 
-        
-    while True:
-        try:
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.wait_for_load_state("networkidle") 
+        time.sleep(SCROLL_PAUSE_TIME)
+            
+        while True:
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
-        
-    # driver.implicitly_wait(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
+            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+            
+            if my_element == False:
+                print('\n bad bad at - '+str(i))
+                i+=1 
+                break
+            i+=1
+            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
+            if i%5 == 1:
+                page.keyboard.press("PageDown")
 
-
-        
-    while True:
-        try:
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.wait_for_load_state("networkidle") 
+        time.sleep(SCROLL_PAUSE_TIME)
+            
+        while True:
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = driver.find_element(By.XPATH, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('\n bad bad at - '+str(i))
-            break
-        i+=1
-        result+="\n "+my_element.text + " -votes:"+str(votes.text)+ " -comments:"+str(comments.text)+" \n "
-
-
-    driver.quit()
+            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+            
+            if my_element == False:
+                print('\n bad bad at - '+str(i))
+                i+=1 
+                break
+            i+=1
+            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
+            if i%5 == 1:
+                page.keyboard.press("PageDown")
     return result
 
 
