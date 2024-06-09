@@ -3,7 +3,7 @@
 from playwright.sync_api import sync_playwright
 
 # Display browser window for debugging?
-debug = True
+debug = False
 
 # This does not catch all tweets yet, maybe some have a different xpath
 # This needs more checking
