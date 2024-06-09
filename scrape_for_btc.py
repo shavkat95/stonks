@@ -12,6 +12,9 @@ headless = True
 # os.environ['PATH'] += "/home/banksy/.local/bin"
 SCROLL_PAUSE_TIME = 1
 
+print(os.name)
+time.sleep(100)
+
 def init_db():
     create_tables()
     return
@@ -241,4 +244,5 @@ def scrape_reddit_btc():
 
 if __name__ == '__main__':
     create_sqlite_database(db_filename)
-    print(scrape_reddit_btc())
+    # print(scrape_reddit_btc())
+    scrape_reddit_btc()
