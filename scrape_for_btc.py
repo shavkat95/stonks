@@ -7,10 +7,10 @@ import os
 from playwright.sync_api import sync_playwright
 import config
 # Display browser window for debugging?
-debug = True
+debug = False
 # debug = bool(config.dic['debug'])
-# os.environ['PATH'] += "/home/banksy/.local/bin"
-SCROLL_PAUSE_TIME = 5
+os.environ['PATH'] += "/home/banksy/.local/bin"
+SCROLL_PAUSE_TIME = 1
 
 def init_db():
     create_tables()
@@ -129,6 +129,70 @@ def scrape_reddit_btc():
         page.goto('https://www.reddit.com/search/?q=bitcoin&sort=new')
         result = ''
         
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        time.sleep(SCROLL_PAUSE_TIME)
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        time.sleep(SCROLL_PAUSE_TIME)
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        time.sleep(SCROLL_PAUSE_TIME)
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        time.sleep(SCROLL_PAUSE_TIME)
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        time.sleep(SCROLL_PAUSE_TIME)
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        time.sleep(SCROLL_PAUSE_TIME)
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        time.sleep(SCROLL_PAUSE_TIME)
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        time.sleep(SCROLL_PAUSE_TIME)
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        page.keyboard.press("PageDown")
+        time.sleep(SCROLL_PAUSE_TIME)
+        
         i = 1
         while True:
             # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
@@ -145,172 +209,8 @@ def scrape_reddit_btc():
             result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
             if i%5 == 1:
                 page.keyboard.press("PageDown")
-            
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
 
-        while True:
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            if my_element == False:
-                print('\n bad bad at - '+str(i))
-                break
-            i+=1
-            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
-            if i%5 == 1:
-                page.keyboard.press("PageDown")
-            
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-
-        while True:
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-                       
-            if my_element == False:
-                print('\n bad bad at - '+str(i))
-                break
-            i+=1
-            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
-            if i%5 == 1:
-                page.keyboard.press("PageDown")
-
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-            
-        while True:
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")  
-            if my_element == False:
-                print('\n bad bad at - '+str(i))
-                break
-            i+=1
-            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
-            if i%5 == 1:
-                page.keyboard.press("PageDown")
-            
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-            
-        while True:
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            if my_element == False:
-                print('\n bad bad at - '+str(i))
-                break
-            i+=1
-            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
-            if i%5 == 1:
-                page.keyboard.press("PageDown")
-
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-            
-        while True:
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            
-            if my_element == False:
-                print('\n bad bad at - '+str(i))
-                break
-            i+=1
-            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
-            if i%5 == 1:
-                page.keyboard.press("PageDown")
-
-
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-            
-        while True:
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            
-            if my_element == False:
-                print('\n bad bad at - '+str(i))
-                break
-            i+=1
-            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
-            if i%5 == 1:
-                page.keyboard.press("PageDown")
-
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-            
-        while True:
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-            my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-            comments = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
-            # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-            votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-            
-            if my_element == False:
-                print('\n bad bad at - '+str(i))
-                break
-            i+=1
-            result+="\n "+str(my_element)+ " -votes:"+str(votes)+ " -comments:"+str(comments)+" \n "
-            if i%5 == 1:
-                page.keyboard.press("PageDown")
+        # time.sleep(600)
     return result
 
 
