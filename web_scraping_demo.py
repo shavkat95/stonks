@@ -2,10 +2,8 @@
 # then: python -m playwright install
 from playwright.sync_api import sync_playwright
 
-import config
 # Display browser window for debugging?
-# debug = False
-debug = config.dic['debug']
+debug = True
 
 # This does not catch all tweets yet, maybe some have a different xpath
 # This needs more checking

@@ -5,15 +5,13 @@ import os
 # pip install playwright
 # then: python -m playwright install
 from playwright.sync_api import sync_playwright
-import config
-# Display browser window for debugging?
+
+# headless on linux
 if os.name=="posix":
     print('os.name == posix -> headless')
     headless = True
 else:
     headless = False
-# debug = bool(config.dic['debug'])
-# os.environ['PATH'] += "/home/banksy/.local/bin"
 SCROLL_PAUSE_TIME = 1
 
 def init_db():
