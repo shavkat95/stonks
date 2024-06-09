@@ -7,9 +7,9 @@ import os
 from playwright.sync_api import sync_playwright
 import config
 # Display browser window for debugging?
-debug = False
+headless = True
 # debug = bool(config.dic['debug'])
-os.environ['PATH'] += "/home/banksy/.local/bin"
+# os.environ['PATH'] += "/home/banksy/.local/bin"
 SCROLL_PAUSE_TIME = 1
 
 def init_db():
@@ -68,7 +68,7 @@ def create_sqlite_database(filename):
             
 def evaluate_one(url, xpath):
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless = not debug)    
+        browser = p.chromium.launch(headless = headless)    
         page = browser.new_page()
         page.goto (url)
         page.wait_for_load_state("networkidle")
@@ -124,7 +124,7 @@ def get_search_data(kw):
 
 def scrape_reddit_btc():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless = not debug)    
+        browser = p.chromium.launch(headless = headless)    
         page = browser.new_page()
         page.goto('https://www.reddit.com/search/?q=bitcoin&sort=new')
         result = ''
