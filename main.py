@@ -34,7 +34,7 @@ def wait_until(runTime, action=None):
         sleep(3540)
         while startTime > datetime.datetime.today().time():
             if str(datetime.datetime.today().time())[3] == '0':
-                return action
+                return action()
             sleep(60)
         return action()
     
@@ -63,9 +63,9 @@ def wait_until(runTime, action=None):
         
     while startTime > datetime.datetime.today().time():
         if str(datetime.datetime.today().time())[3] == '0':
-            return action
+            return action()
         sleep(60)
-    return action
+    return action()
 
 
 
