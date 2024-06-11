@@ -243,5 +243,5 @@ def scrape_reddit_btc():
 
 if __name__ == '__main__':
     create_sqlite_database(db_filename)
-    # print(scrape_reddit_btc())
-    scrape_reddit_btc()
+    print(scrape_reddit_btc())
+    # scrape_reddit_btc()
