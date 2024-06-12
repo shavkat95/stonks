@@ -112,7 +112,7 @@ def evaluate_in_page(page, xpath):
 
 def get_search_data(kw):
     # return list with data to keyword search
-    # posts sentiment info last 2 hours (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info (posts count, comments count, votes count)
+    # posts sentiment info last 2 hours - per post: (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info - per keyword/request: (posts count, comments count, votes count)
     # active posts sentiment info last 12 hours (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info (posts count, comments count, votes count)
     
     
