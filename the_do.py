@@ -147,21 +147,22 @@ def get_search_data(page, kw):
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time
         time = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time")
         # time = time.datetime
-        
-        if time.endswith("ago"):
-            # english
-            time = time[:-4]
-        elif time.startswith("vor"):
-            # german
-            time = time[4:]
-            time.replace(" Std", "h")
-            time.replace(" m", "m")
-            time.replace(" Tagen", "d")
-            time.replace(" Tag", "d")
-            time.replace(" Monaten", "mo")
-            time.replace(" Monat", "mo")
-            time.replace(" Jahren", "y")
-            time.replace(" Jahr", "y")
+        if time != False:
+            time = str(time)
+            if time.endswith("ago"):
+                # english
+                time = time[:-4]
+            elif time.startswith("vor"):
+                # german
+                time = time[4:]
+                time = time.replace(" Std", "h")
+                time = time.replace(" m", "m")
+                time = time.replace(" Tagen", "d")
+                time = time.replace(" Tag", "d")
+                time = time.replace(" Monaten", "mo")
+                time = time.replace(" Monat", "mo")
+                time = time.replace(" Jahren", "y")
+                time = time.replace(" Jahr", "y")
         print("time: "+str(time))
         if my_element == False:
             print('\n bad bad at - '+str(i))
