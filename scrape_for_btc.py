@@ -16,10 +16,6 @@ SCROLL_PAUSE_TIME = .5
 
 keywords = ["bitcoin", "btc", "crypto", "cryptocurrencies", "blockchain"]
 
-def init_db():
-    create_tables()
-    return
-
 def create_tables():
     # also deletes 'the_do'-table
     sql_statements = [ 
@@ -55,19 +51,6 @@ def create_tables():
 
 def do_the_do():
     return
-
-def create_sqlite_database(filename):
-    """ create a database connection to an SQLite database """
-    conn = None
-    try:
-        conn = sqlite3.connect(filename)
-        print(sqlite3.sqlite_version)
-        init_db()
-    except sqlite3.Error as e:
-        print(e)
-    finally:
-        if conn:
-            conn.close()
             
             
 def evaluate_one(url, xpath):
@@ -199,6 +182,6 @@ def scrape_reddit_btc():
 
 
 if __name__ == '__main__':
-    create_sqlite_database(db_filename)
+    create_tables()
     # print(scrape_reddit_btc())
     scrape_reddit_btc()
