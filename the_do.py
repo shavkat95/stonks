@@ -124,12 +124,22 @@ def scroll_to_bottom(page):
     for _ in range(25):
         joan_scroll(page)
 
-def scrape_post(page):
+def scrape_post(context, url):
+    
+    page = context.new_page()
+    page.goto(url)
+    joan_scroll(page)
+    joan_scroll(page)
+    joan_scroll(page)
+    # page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
+        
+    
     post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
     print(post_text)
     post_comments = ""
     comments_counts = 0
     comments_votes = 0
+    page.close()
     return [post_text, post_comments, comments_counts, comments_votes]
 
 def sleep_random():
@@ -164,25 +174,17 @@ def get_search_data(context, page, kw):
         num_votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time
         time_ago = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time")
-
-        # there has to be better ways
-        page_two = context.new_page()
-        page_two.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
-        # scroll_to_bottom(page_two)
-        page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
-        scroll_to_bottom(page_two)
-        post_text = ""
-        post_comments = ""
-        comments_counts = 0
-        comments_votes = 0
         
-        [post_text, post_comments, comments_counts, comments_votes] = scrape_post(page_two)
+        post_link = page.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').get_attribute('href')
+        post_link = "https://www.reddit.com"+str(post_link)
+        
+        [post_text, post_comments, comments_counts, comments_votes] = scrape_post(context, post_link)
         
         
         
         # print(test)
         # sleep_random()
-        # time.sleep(10)
+        time.sleep(20)
         sys.exit(0)
         if headline == False:
             print('\n bad bad at - '+str(i))
