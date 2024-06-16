@@ -158,6 +158,7 @@ def get_search_data(page, kw):
             time = time[4:]
             time.replace(" Std", "h")
             time.replace(" m", "m")
+            time.replace(" Tag", "m")
         
         if my_element == False:
             print('\n bad bad at - '+str(i))
@@ -179,7 +180,7 @@ def do_the_do():
         browser = p.chromium.launch(headless = headless)
         context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81")
         page = context.new_page()
-        get_search_data(page, "ethereum")
+        get_search_data(page, "dogecoin")
     return
 
 
