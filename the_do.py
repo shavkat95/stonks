@@ -153,10 +153,10 @@ def read_comments(page):
             break
         if i == 1 and "I am a bot, and this action was performed automatically. Please contact the moderators of this subreddit if you have any questions or concerns." in current_comment:
             continue
-        # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[1]/shreddit-comment-action-row//div/div/span
+        # /div/div/span/span/faceplate-number
         # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[2]/shreddit-comment-action-row//div/div/span/span/faceplate-number/text()
         # //*[@id="comment-tree"]/shreddit-comment[1]/shreddit-comment-action-row//div/div/span
-        current_vote = page.locator("""//shreddit-comment[$index]""".replace('$index', str(i))+"//shreddit-comment-action-row//faceplate-number").all_inner_texts()
+        current_vote = page.locator("""//shreddit-comment[$index]""".replace('$index', str(i))+"//shreddit-comment-action-row//div/div/span/span/faceplate-number").all_text_contents()
         # current_vote = evaluate_in_page(page, """//shreddit-comment[$index]""".replace('$index', str(i))+"/shreddit-comment-action-row//faceplate-number")
         # current_vote = evaluate_in_page(page, """//shreddit-comment[$index]""".replace('$index', str(i))+"//shreddit-comment-action-row//faceplate-number")
         page.wait_for_load_state()
@@ -312,7 +312,7 @@ def do_the_do():
         browser = p.chromium.launch(headless = headless)
         context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81")
         page = context.new_page()
-        get_search_data(context, page, "bitcoin")
+        get_search_data(context, page, "dogecoin")
     return
 
 
