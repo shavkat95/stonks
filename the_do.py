@@ -20,7 +20,7 @@ keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin'
             "binance",
             "sol",
             
-            "dapps", "defi", "crypto", "cryptocurrency", "cryptocurrencies", "blockchain",
+            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger"
             ]
 
 slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot_new', 'bitcoin_cash', 'chainlink', 'near_protocol']
@@ -119,7 +119,7 @@ def scroll_to_bottom(page):
 def get_search_data(page, kw):
     # return list with data to keyword search
 
-    page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
+    page.goto(f'https://www.reddit.com/search/?q={kw}')
     scroll_to_bottom(page)
     
     # - keyword
@@ -158,7 +158,8 @@ def get_search_data(page, kw):
             time = time[4:]
             time.replace(" Std", "h")
             time.replace(" m", "m")
-            time.replace(" Tag", "m")
+            time.replace(" Tagen", "d")
+            time.replace(" Tag", "d")
         
         if my_element == False:
             print('\n bad bad at - '+str(i))
