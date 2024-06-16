@@ -2,6 +2,7 @@ import sqlite3
 db_filename = "my.db"
 import time
 import os
+import sys
 # pip install playwright
 # then: python -m playwright install
 from playwright.sync_api import sync_playwright

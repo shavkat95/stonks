@@ -2,6 +2,8 @@ import sqlite3
 db_filename = "my.db"
 import time
 import os
+import sys
+import random
 # pip install playwright
 # then: python -m playwright install
 from playwright.sync_api import sync_playwright
@@ -20,7 +22,7 @@ keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin'
             "binance",
             "sol",
             
-            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger"
+            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi",
             ]
 
 slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot_new', 'bitcoin_cash', 'chainlink', 'near_protocol']
@@ -110,16 +112,32 @@ def joan_scroll(page):
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
     time.sleep(SCROLL_PAUSE_TIME)
     
 def scroll_to_bottom(page):
     for _ in range(25):
         joan_scroll(page)
+
+def scrape_post(page):
+    post_text = ""
+    post_comments = ""
+    comments_counts = ""
+    comments_votes = ""
+    return 
+
+def sleep_random():
+    time.sleep(random.uniform(.15, .5))
         
-def get_search_data(page, kw):
+def get_search_data(context, page, kw):
     # return list with data to keyword search
 
-    page.goto(f'https://www.reddit.com/search/?q={kw}')
+    page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
     scroll_to_bottom(page)
     
     # - keyword
@@ -140,35 +158,46 @@ def get_search_data(page, kw):
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
         my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
-        comments_  = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+        num_comments  = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
-        votes_ = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
-        
+        num_votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time
-        time = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time")
-        # time = time.datetime
-        if time != False:
-            time = str(time)
-            if time.endswith("ago"):
-                # english
-                time = time[:-4]
-            elif time.startswith("vor"):
-                # german
-                time = time[4:]
-                time = time.replace(" Std", "h")
-                time = time.replace(" m", "m")
-                time = time.replace(" Tagen", "d")
-                time = time.replace(" Tag", "d")
-                time = time.replace(" Monaten", "mo")
-                time = time.replace(" Monat", "mo")
-                time = time.replace(" Jahren", "y")
-                time = time.replace(" Jahr", "y")
-        print("time: "+str(time))
+        time_ago = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time")
+
+        # there has to be better ways
+        page_two = context.new_page()
+        page_two.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
+        # time.sleep(SCROLL_PAUSE_TIME*3)
+        page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
+        # print(test)
+        sleep_random()
+        time.sleep(10)
+        sys.exit(0)
         if my_element == False:
             print('\n bad bad at - '+str(i))
             break
+        
+        # time = time.datetime # having trouble getting actual datetime, so we work with text:
+        if time_ago != False:
+            time_ago = str(time_ago)
+            if time_ago.endswith("ago"):
+                # english
+                time_ago = time_ago[:-4]
+            elif time_ago.startswith("vor"):
+                # german
+                time_ago = time_ago[4:]
+                time_ago = time_ago.replace(" Std", "h")
+                time_ago = time_ago.replace(" m", "m")
+                time_ago = time_ago.replace(" Tagen", "d")
+                time_ago = time_ago.replace(" Tag", "d")
+                time_ago = time_ago.replace(" Monaten", "mo")
+                time_ago = time_ago.replace(" Monat", "mo")
+                time_ago = time_ago.replace(" Jahren", "y")
+                time_ago = time_ago.replace(" Jahr", "y")
+        # print("time: "+str(time))
+        
         i+=1
-        result+="\n "+str(my_element)+ " -votes:"+str(votes_)+ " -comments:"+str(comments_)+" \n "
+        result+="\n "+str(my_element)+ " -votes:"+str(num_votes)+ " -comments:"+str(num_comments)+" \n "
         if i%5 == 1:
             page.keyboard.press("PageDown")
             page.keyboard.press("PageDown")
@@ -184,7 +213,7 @@ def do_the_do():
         browser = p.chromium.launch(headless = headless)
         context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81")
         page = context.new_page()
-        get_search_data(page, "dogecoin")
+        get_search_data(context, page, "dogecoin")
     return
 
 
