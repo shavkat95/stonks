@@ -125,7 +125,8 @@ def scroll_to_bottom(page):
         joan_scroll(page)
 
 def scrape_post(page):
-    post_text = ""
+    post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
+    print(post_text)
     post_comments = ""
     comments_counts = ""
     comments_votes = ""
@@ -156,7 +157,7 @@ def get_search_data(context, page, kw):
     i = 1
     while True:
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
-        my_element = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+        headline = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
         num_comments  = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
@@ -167,13 +168,22 @@ def get_search_data(context, page, kw):
         # there has to be better ways
         page_two = context.new_page()
         page_two.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
-        # time.sleep(SCROLL_PAUSE_TIME*3)
         page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
+        
+        post_text = ""
+        post_comments = ""
+        comments_counts = 0
+        comments_votes = 0
+        
+        [post_text, post_comments, comments_counts, comments_votes] = scrape_post(page_two)
+        
+        
+        
         # print(test)
-        sleep_random()
-        time.sleep(10)
+        # sleep_random()
+        # time.sleep(10)
         sys.exit(0)
-        if my_element == False:
+        if headline == False:
             print('\n bad bad at - '+str(i))
             break
         
@@ -197,7 +207,7 @@ def get_search_data(context, page, kw):
         # print("time: "+str(time))
         
         i+=1
-        result+="\n "+str(my_element)+ " -votes:"+str(num_votes)+ " -comments:"+str(num_comments)+" \n "
+        result+="\n "+str(headline)+ " -votes:"+str(num_votes)+ " -comments:"+str(num_comments)+" \n "
         if i%5 == 1:
             page.keyboard.press("PageDown")
             page.keyboard.press("PageDown")
