@@ -22,7 +22,7 @@ keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin'
             "binance",
             "sol",
             
-            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi",
+            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "meme_coin"
             ]
 
 slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot_new', 'bitcoin_cash', 'chainlink', 'near_protocol']
@@ -98,7 +98,7 @@ def evaluate_in_page(page, xpath):
     result = page.evaluate(extract_tweet_javascript.replace("$PATH", str(xpath))) 
     return result
 
-def joan_scroll(page):
+def juan_scroll(page):
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
@@ -120,30 +120,119 @@ def joan_scroll(page):
     page.keyboard.press("PageDown")
     time.sleep(SCROLL_PAUSE_TIME)
     
+    # page.wait_for_load_state() # sounds good, doesnt work
+
+def sleep_random():
+    time.sleep(random.uniform(.15, .5))
+
 def scroll_to_bottom(page):
-    for _ in range(25):
-        joan_scroll(page)
+    for _ in range(15):
+        juan_scroll(page)
+
+def read_comments(page):
+    comments = ""
+    comments_votes = 0
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[1]/div[3]
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[2]/div[3]
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[3]/div[3]
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[3]/shreddit-comment/div[3] # nested once
+    # ...
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[7]/div[3]
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[7]/shreddit-comment[1]/div[3] # nested once
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[7]/shreddit-comment[2]/div[3] # nested once
+    # ...
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[17]/div[3]
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[17]/shreddit-comment[1]/div[3] # nested once
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[17]/shreddit-comment[2]/div[3] # nested once
+    # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[17]/shreddit-comment[2]/shreddit-comment/div[3] # nested twice
+    base_XPath = "/html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[$index]"
+    shreddit = "/shreddit-comment[$index]"
+    for i in range(1, 100):
+        current_comment = evaluate_in_page(page, base_XPath.replace('$index', str(i))+'/div[3]')
+        if current_comment == False:
+            break
+        if i == 1 and "I am a bot, and this action was performed automatically. Please contact the moderators of this subreddit if you have any questions or concerns." in current_comment:
+            continue
+        # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[1]/shreddit-comment-action-row//div/div/span
+        # /html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[2]/shreddit-comment-action-row//div/div/span/span/faceplate-number/text()
+        # //*[@id="comment-tree"]/shreddit-comment[1]/shreddit-comment-action-row//div/div/span
+        current_vote = page.locator("""//shreddit-comment[$index]""".replace('$index', str(i))+"//shreddit-comment-action-row//faceplate-number").all_inner_texts()
+        # current_vote = evaluate_in_page(page, """//shreddit-comment[$index]""".replace('$index', str(i))+"/shreddit-comment-action-row//faceplate-number")
+        # current_vote = evaluate_in_page(page, """//shreddit-comment[$index]""".replace('$index', str(i))+"//shreddit-comment-action-row//faceplate-number")
+        page.wait_for_load_state()
+        # current_vote = current_vote.get_attribute('number')
+        print(current_vote)
+        time.sleep(500)
+        sys.exit()
+        current_vote = evaluate_in_page(page, base_XPath.replace('$index', str(i))+"/shreddit-comment-action-row//faceplate-number")
+        if str(current_vote).isnumeric():
+            current_vote = abs(int(current_vote))
+            comments_votes += current_vote        
+        comments_votes += current_vote
+        comments += '\n'+current_comment.replace("\n", "").replace("                ", "")
+        for j in range(1, 50):
+            current_comment = evaluate_in_page(page, base_XPath.replace('$index', str(i))+shreddit.replace('$index', str(j))+'/div[3]')
+            if current_comment == False:
+                break
+            
+            current_vote = evaluate_in_page(page, base_XPath.replace('$index', str(i))+shreddit.replace('$index', str(j))+"/shreddit-comment-action-row//div/div/span/span/faceplate-number")
+            print(current_vote)
+            sys.exit()
+            if str(current_vote).isnumeric():
+                current_vote = abs(int(current_vote))
+                comments_votes += current_vote  
+            comments += '\n >'+current_comment.replace("\n", "").replace("                ", "")
+            for k in range(1, 50):
+                current_comment = evaluate_in_page(page, base_XPath.replace('$index', str(i))+shreddit.replace('$index', str(j))+shreddit.replace('$index', str(k))+'/div[3]')
+                if current_comment == False:
+                    break
+                current_vote = evaluate_in_page(page, base_XPath.replace('$index', str(i))+shreddit.replace('$index', str(j))+shreddit.replace('$index', str(k))+"/shreddit-comment-action-row//div/div/span/span/faceplate-number")
+                if str(current_vote).isnumeric():
+                    current_vote = abs(int(current_vote))
+                    comments_votes += current_vote
+                comments += '\n > >'+current_comment.replace("\n", "").replace("                ", "")
+                for l in range(1, 50):
+                    current_comment = evaluate_in_page(page, base_XPath.replace('$index', str(i))+shreddit.replace('$index', str(j))+shreddit.replace('$index', str(k))+shreddit.replace('$index', str(l))+'/div[3]')
+                    if current_comment == False:
+                        break
+                    current_vote = abs(int(evaluate_in_page(page, base_XPath.replace('$index', str(i))+shreddit.replace('$index', str(j))+shreddit.replace('$index', str(k))+shreddit.replace('$index', str(l))+"/shreddit-comment-action-row//div/div/span/span/faceplate-number")))
+                    comments_votes += current_vote
+                    comments += '\n > > >'+current_comment.replace("\n", "").replace("                ", "")
+                    for m in range(1, 50):
+                        current_comment = evaluate_in_page(page, base_XPath.replace('$index', str(i))+shreddit.replace('$index', str(j))+shreddit.replace('$index', str(k))+shreddit.replace('$index', str(l))+shreddit.replace('$index', str(m))+'/div[3]')
+                        if current_comment == False:
+                            break
+                        current_vote = abs(int(evaluate_in_page(page, base_XPath.replace('$index', str(i))+shreddit.replace('$index', str(j))+shreddit.replace('$index', str(k))+shreddit.replace('$index', str(l))+shreddit.replace('$index', str(m))+"/shreddit-comment-action-row//div/div/span/span/faceplate-number")))
+                        comments_votes += current_vote
+                        comments += '\n > > > >'+current_comment.replace("\n", "").replace("                ", "")
+    print(comments)
+    print(comments_votes)
+    
+    # time.sleep(500)
+    
+    return [comments, comments_votes]
 
 def scrape_post(context, url):
     
     page = context.new_page()
     page.goto(url)
-    joan_scroll(page)
-    joan_scroll(page)
-    joan_scroll(page)
+    juan_scroll(page)
+    juan_scroll(page)
+    juan_scroll(page)
+    juan_scroll(page)
+    page.wait_for_load_state()
     # page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
-        
     
+    # post text
     post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
-    print(post_text)
-    post_comments = ""
-    comments_counts = 0
-    comments_votes = 0
+    if post_text == False: 
+        post_text = ""
+        
+    # post comments
+    [post_comments, comments_votes] = read_comments(page)
+    
     page.close()
-    return [post_text, post_comments, comments_counts, comments_votes]
-
-def sleep_random():
-    time.sleep(random.uniform(.15, .5))
+    return [post_text, post_comments, comments_votes]
         
 def get_search_data(context, page, kw):
     # return list with data to keyword search
@@ -178,14 +267,16 @@ def get_search_data(context, page, kw):
         post_link = page.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').get_attribute('href')
         post_link = "https://www.reddit.com"+str(post_link)
         
-        [post_text, post_comments, comments_counts, comments_votes] = scrape_post(context, post_link)
+        [post_text, post_comments, comments_votes] = scrape_post(context, post_link)
         
+        # considering only active older posts 
+        activity = int(num_comments)+int(num_votes)
         
+        # print(post_text)
         
-        # print(test)
         # sleep_random()
-        time.sleep(20)
-        sys.exit(0)
+        # time.sleep(20)
+        # sys.exit(0)
         if headline == False:
             print('\n bad bad at - '+str(i))
             break
@@ -211,13 +302,8 @@ def get_search_data(context, page, kw):
         
         i+=1
         result+="\n "+str(headline)+ " -votes:"+str(num_votes)+ " -comments:"+str(num_comments)+" \n "
-        if i%5 == 1:
-            page.keyboard.press("PageDown")
-            page.keyboard.press("PageDown")
-            page.keyboard.press("PageDown")
-            page.keyboard.press("PageDown")
-            page.keyboard.press("PageDown")
-            page.keyboard.press("PageDown")
+        
+        page.keyboard.press("PageDown")
     return output
         
 def do_the_do():
@@ -226,7 +312,7 @@ def do_the_do():
         browser = p.chromium.launch(headless = headless)
         context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81")
         page = context.new_page()
-        get_search_data(context, page, "dogecoin")
+        get_search_data(context, page, "bitcoin")
     return
 
 
