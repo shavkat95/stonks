@@ -1,0 +1,148 @@
+// ==UserScript==
+// @name         My Web Scraper
+// @namespace    http://tampermonkey.net/
+// @version      2024-06-08
+// @description  Scrape the Web using Python
+// @author       You
+// @match        *://*/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=tampermonkey.net
+// @grant        none
+// @connect ws://127.0.0.1:9999
+// @run-at document-idle
+// @noframes
+// ==/UserScript==
+
+(async function() {
+    'use strict';
+
+    let socket;
+    let pendingOperation = false;
+    let commandQueue = [];
+    var address = "127.0.0.1:9999";
+
+    async function waitForElement(xpath, timeout = 1000) {
+        return await new Promise(resolve => {
+            let check = setInterval(() => {
+                let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element) {
+                    clearInterval(check);
+                    resolve(element);
+                }
+            }, 100);
+            setTimeout(() => {
+                clearInterval(check);
+                resolve("error");
+            }, timeout);
+        });
+    }
+
+    async function setText(xpath, text, timeout = 1000) {
+        let element = await waitForElement(xpath, timeout);
+        if (element === "error") return "error";
+        element.value = text;
+        return "success";
+    }
+
+    async function click(xpath, timeout = 1000) {
+        let element = await waitForElement(xpath, timeout);
+        if (element === "error") return "error";
+        element.click();
+        return "success";
+    }
+
+    async function goto(url) {
+        document.location = url;
+        return "success";
+    }
+
+    function connect() {
+        socket = new WebSocket('ws://' + address);
+
+        socket.onopen = function () {
+            console.log('Connected to server (' + address + ')');
+        };
+
+        socket.onmessage = function (event) {
+            const command = event.data;
+            console.log("Server command: " + command);
+
+            commandQueue.push(command);
+            processNextCommand();
+        };
+
+        socket.onclose = function () {
+            console.log('Connection closed, retrying...');
+            setTimeout(connect, 1000);
+        };
+
+        socket.onerror = function (error) {
+            console.error('WebSocket error:', error);
+        };
+    }
+
+    async function processNextCommand() {
+        if (pendingOperation || commandQueue.length === 0) {
+            return;
+        }
+
+        pendingOperation = true;
+        const command = commandQueue.shift();
+        var close = false;
+
+        try {
+            let result;
+            if (command === 'disconnect') {
+                console.log("Disconnect command received. Exiting script.");
+                result = "success"
+                console.log("Response: " + result);
+                socket.send(String(result));
+                socket.close();
+                return;
+            }
+
+            const [cmd, ...cmdParts] = command.split(':');
+            const cmdText = cmdParts.join(':');
+            const [arg1, arg2, arg3] = cmdText.split('|');
+
+            if (cmd === 'js') {
+                try {
+                    result = eval(cmdText);
+                } catch (e) {
+                    result = "error";
+                }
+            }
+            else if (cmd === 'wait_for') {
+                const timeout = arg2 ? parseInt(arg2, 10) : 1000;
+                result = await waitForElement(arg1, timeout);
+                result = result === "error" ? "error" : result.textContent;
+            } else if (cmd === 'set_text') {
+                const timeout = arg3 ? parseInt(arg3, 10) : 1000;
+                result = await setText(arg1, arg2, timeout);
+            } else if (cmd === 'click') {
+                const timeout = arg2 ? parseInt(arg2, 10) : 1000;
+                result = await click(arg1, timeout);
+            } else if (cmd === 'goto') {
+                result = await goto(arg1);
+                close = true;
+            } else {
+                result = 'Unknown command';
+            }
+            console.log("Response: " + result);
+            socket.send(String(result));
+        } catch (error) {
+            console.error("Error: " + error);
+            socket.send(String(error));
+        } finally {
+            if (close == true)
+            {
+                socket.close();
+                return;
+            }
+            pendingOperation = false;
+            processNextCommand();
+        }
+    }
+
+    connect();
+
+})();

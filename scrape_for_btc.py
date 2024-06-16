@@ -12,7 +12,9 @@ if os.name=="posix":
     headless = True
 else:
     headless = False
-SCROLL_PAUSE_TIME = 1
+SCROLL_PAUSE_TIME = .5
+
+keywords = ["bitcoin", "btc", "crypto", "cryptocurrencies", "blockchain"]
 
 def init_db():
     create_tables()
@@ -113,7 +115,7 @@ def evaluate_in_page(page, xpath):
 def get_search_data(kw):
     # return list with data to keyword search
     # posts sentiment info last 2 hours - per post: (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info - per keyword/request: (posts count, comments count, votes count)
-    # active posts sentiment info last 12 hours (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info (posts count, comments count, votes count)
+    # active posts sentiment info last 12 hours - per post: (headline, text, votes, comments, comment count, comment votes, word count) -> mean + activity info - per keyword/request: (posts count, comments count, votes count)
     
     
     output = []
@@ -123,6 +125,28 @@ def get_search_data(kw):
     # time.sleep(SCROLL_PAUSE_TIME) # Sleep for 3 seconds
     
     return output
+
+def joan_scroll(page):
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    time.sleep(SCROLL_PAUSE_TIME)
+    
+
+def scroll_to_bottom(page):
+    for _ in range(25):
+        joan_scroll(page)
+    
 
 def scrape_reddit_btc():
     with sync_playwright() as p:
@@ -138,74 +162,7 @@ def scrape_reddit_btc():
         
         result = ''
         
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        page.keyboard.press("PageDown")
-        time.sleep(SCROLL_PAUSE_TIME)
+        scroll_to_bottom(page)
         
         i = 1
         while True:
@@ -243,5 +200,5 @@ def scrape_reddit_btc():
 
 if __name__ == '__main__':
     create_sqlite_database(db_filename)
-    print(scrape_reddit_btc())
-    # scrape_reddit_btc()
+    # print(scrape_reddit_btc())
+    scrape_reddit_btc()
