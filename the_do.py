@@ -128,9 +128,9 @@ def scrape_post(page):
     post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
     print(post_text)
     post_comments = ""
-    comments_counts = ""
-    comments_votes = ""
-    return 
+    comments_counts = 0
+    comments_votes = 0
+    return [post_text, post_comments, comments_counts, comments_votes]
 
 def sleep_random():
     time.sleep(random.uniform(.15, .5))
@@ -168,8 +168,9 @@ def get_search_data(context, page, kw):
         # there has to be better ways
         page_two = context.new_page()
         page_two.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
+        # scroll_to_bottom(page_two)
         page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
-        
+        scroll_to_bottom(page_two)
         post_text = ""
         post_comments = ""
         comments_counts = 0
