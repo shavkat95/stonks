@@ -183,7 +183,7 @@ def sleep_random():
     time.sleep(random.uniform(.15, .5))
 
 def scroll_to_bottom(page):
-    for _ in range(15):
+    for _ in range(3):
         juan_scroll(page)
 
 def read_comments(page):
@@ -262,10 +262,7 @@ def scrape_post(context, url):
     
     page = context.new_page()
     page.goto(url)
-    juan_scroll(page)
-    juan_scroll(page)
-    juan_scroll(page)
-    juan_scroll(page)
+    scroll_to_bottom(page)
     page.wait_for_load_state()
     # page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
     
@@ -391,7 +388,8 @@ def one_search_page(context, page):
                 mo["comment_counts"]+=str(num_comments) + " | "
                 mo["comment_votes"]+=str(comments_votes) + " | "
         i+=1
-        page.keyboard.press("PageDown")
+        if i%5 == 4:
+            juan_scroll(page)
     return [hr2, hr12, hr24, d7, mo]
    
 def get_search_data(context, page, kw):
