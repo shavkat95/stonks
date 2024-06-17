@@ -14,7 +14,7 @@ if os.name=="posix":
     headless = True
 else:
     headless = False
-SCROLL_PAUSE_TIME = .01
+SCROLL_PAUSE_TIME = .1
 
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             "btc", 
