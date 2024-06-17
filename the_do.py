@@ -309,7 +309,7 @@ def scrape_post(context, url):
     page.close()
     return [post_text, post_comments, comments_votes]
 
-def one_search_page(context, page, base_url):
+def one_search_page(context, page):
     scroll_to_bottom(page)
     
     # - keyword
@@ -375,7 +375,7 @@ def one_search_page(context, page, base_url):
                 for i in range(1, len(pages)):
                     pages[i].close()
             time.sleep(1)
-            page.reload()
+            # page.reload()
             time.sleep(1)
             scroll_to_bottom(page)
             time.sleep(1)
@@ -463,11 +463,11 @@ def get_search_data(context, page, kw):
     # return list with data to keyword search
 
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
-    [hr2, hr12, hr24, d7, mo] = one_search_page(context, page, f'https://www.reddit.com/search/?q={kw}&sort=new')
+    [hr2, hr12, hr24, d7, mo] = one_search_page(context, page)
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
-    hot = one_search_page(context, page, f'https://www.reddit.com/search/?q={kw}&sort=hot')
+    hot = one_search_page(context, page)
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
-    relevant = one_search_page(context, page, f'https://www.reddit.com/search/?q={kw}&sort=relevance')
+    relevant = one_search_page(context, page)
     
     #output logic
     hr2["headlines"]+=hot[0]["headlines"] + relevant[0]["headlines"]
