@@ -14,7 +14,7 @@ if os.name=="posix":
     headless = True
 else:
     headless = False
-SCROLL_PAUSE_TIME = .5
+SCROLL_PAUSE_TIME = .1
 
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             "btc", 
@@ -175,9 +175,8 @@ def juan_scroll(page):
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
-    time.sleep(SCROLL_PAUSE_TIME)
-    
-    # page.wait_for_load_state() # sounds good, doesnt work
+    # time.sleep(SCROLL_PAUSE_TIME)
+    page.wait_for_load_state() # sounds good, doesnt work
 
 def sleep_random():
     time.sleep(random.uniform(.15, .5))
@@ -270,6 +269,7 @@ def scrape_post(context, url):
     post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
     if post_text == False: 
         post_text = ""
+    post_text = post_text.strip()
         
     # post comments
     [post_comments, comments_votes] = read_comments(page)
@@ -294,6 +294,9 @@ def one_search_page(context, page):
     while True:
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
         headline = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+        if headline == False:
+            # print('\n bad bad at - '+str(i))
+            break
         headline = headline.strip()
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
         num_comments  = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
@@ -315,9 +318,7 @@ def one_search_page(context, page):
         # considering only active older posts 
         activity = int(num_comments)+int(num_votes)
         
-        if headline == False:
-            # print('\n bad bad at - '+str(i))
-            break
+
         
         # we work with text-value instead of original datetime:
         if time_ago != False:
@@ -388,8 +389,10 @@ def one_search_page(context, page):
                 mo["comment_counts"]+=str(num_comments) + " | "
                 mo["comment_votes"]+=str(comments_votes) + " | "
         i+=1
-        if i%5 == 4:
+        print(i)
+        if i%30 == 29:
             juan_scroll(page)
+            print("i%30 == 29")
     return [hr2, hr12, hr24, d7, mo]
    
 def get_search_data(context, page, kw):
