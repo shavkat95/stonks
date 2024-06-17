@@ -280,6 +280,7 @@ def scrape_post(context, url, base_url):
     # page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
     
     #see if loaded
+    # /html/body/shreddit-app/shreddit-forbidden//icon-spoiler
     error_div = evaluate_in_page(page, "//shreddit-forbidden")
     test_div = evaluate_in_page(page, "/html/body/shreddit-app/div/div[1]/div/main/shreddit-post//div[2]")
     test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app/div/div[2]/reddit-sidebar-nav/nav")
@@ -359,6 +360,12 @@ def one_search_page(context, page, base_url):
         
         post_link = page.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').get_attribute('href')
         post_link = "https://www.reddit.com"+str(post_link)
+        
+        # it's bugged idk
+        pages = context.pages
+        if len(pages) > 1:
+            for i in range(1, len(pages)):
+                pages[i].close()
         
         [post_text, post_comments, comments_votes] = scrape_post(context, post_link, base_url)
         
