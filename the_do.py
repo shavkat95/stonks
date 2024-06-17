@@ -340,7 +340,7 @@ def one_search_page(context, page, base_url):
                 num_comments = num_comments.replace(".", "")
                 num_comments = int(num_comments)
         else:
-            num_comments = int(num_votes.replace(".", ""))
+            num_comments = int(num_comments.replace(".", ""))
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
         num_votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         if "K" in num_votes: #for the english
