@@ -33,9 +33,9 @@ def wait_until(runTime, action=None):
         sleep(3540)
         while startTime > datetime.datetime.today().time():
             if str(datetime.datetime.today().time())[3] == '0':
-                return action()
+                return action(runTime)
             sleep(60)
-        return action()
+        return action(runTime)
     
     # 50
     if (datetime.datetime.now() + datetime.timedelta(minutes = 50)).time() < startTime:
@@ -62,9 +62,9 @@ def wait_until(runTime, action=None):
         
     while startTime > datetime.datetime.today().time():
         if str(datetime.datetime.today().time())[3] == '0':
-            return action()
+            return action(runTime)
         sleep(60)
-    return action()
+    return action(runTime)
 
 
 
