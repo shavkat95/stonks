@@ -348,48 +348,48 @@ def one_search_page(context, page):
             if activity > 5:
                 d7["headlines"]+=headline + " | "
                 d7["texts"]+=post_text + " | "
-                d7["votes"]+=num_votes + " | "
+                d7["votes"]+=str(num_votes) + " | "
                 d7["comments"]+=post_comments + " | "
-                d7["comment_counts"]+=num_comments + " | "
-                d7["comment_votes"]+=comments_votes + " | "
+                d7["comment_counts"]+=str(num_comments) + " | "
+                d7["comment_votes"]+=str(comments_votes) + " | "
         elif time_ago.endswith("m"):
             hr2["headlines"]+=headline + " | "
             hr2["texts"]+=post_text + " | "
-            hr2["votes"]+=num_votes + " | "
+            hr2["votes"]+=str(num_votes) + " | "
             hr2["comments"]+=post_comments + " | "
-            hr2["comment_counts"]+=num_comments + " | "
-            hr2["comment_votes"]+=comments_votes + " | "                
+            hr2["comment_counts"]+=str(num_comments) + " | "
+            hr2["comment_votes"]+=str(comments_votes) + " | "                
         elif time_ago.endswith("h"):
             if int(time_ago[:-1])<=2:
                 hr2["headlines"]+=headline + " | "
                 hr2["texts"]+=post_text + " | "
-                hr2["votes"]+=num_votes + " | "
+                hr2["votes"]+=str(num_votes) + " | "
                 hr2["comments"]+=post_comments + " | "
-                hr2["comment_counts"]+=num_comments + " | "
-                hr2["comment_votes"]+=comments_votes + " | "    
+                hr2["comment_counts"]+=str(num_comments) + " | "
+                hr2["comment_votes"]+=str(comments_votes) + " | "    
             elif int(time_ago[:-1])<=12:
                 if activity > 5:
                     hr12["headlines"]+=headline + " | "
                     hr12["texts"]+=post_text + " | "
-                    hr12["votes"]+=num_votes + " | "
+                    hr12["votes"]+=str(num_votes) + " | "
                     hr12["comments"]+=post_comments + " | "
-                    hr12["comment_counts"]+=num_comments + " | "
-                    hr12["comment_votes"]+=comments_votes + " | "                                
+                    hr12["comment_counts"]+=str(num_comments) + " | "
+                    hr12["comment_votes"]+=str(comments_votes) + " | "                                
             else:
                 if activity > 4:
                     hr24["headlines"]+=headline + " | "
                     hr24["texts"]+=post_text + " | "
-                    hr24["votes"]+=num_votes + " | "
+                    hr24["votes"]+=str(num_votes) + " | "
                     hr24["comments"]+=post_comments + " | "
-                    hr24["comment_counts"]+=num_comments + " | "
-                    hr24["comment_votes"]+=comments_votes + " | "
+                    hr24["comment_counts"]+=str(num_comments) + " | "
+                    hr24["comment_votes"]+=str(comments_votes) + " | "
         elif time_ago.endswith("mo"):
                 mo["headlines"]+=headline + " | "
                 mo["texts"]+=post_text + " | "
-                mo["votes"]+=num_votes + " | "
+                mo["votes"]+=str(num_votes) + " | "
                 mo["comments"]+=post_comments + " | "
-                mo["comment_counts"]+=num_comments + " | "
-                mo["comment_votes"]+=comments_votes + " | "
+                mo["comment_counts"]+=str(num_comments) + " | "
+                mo["comment_votes"]+=str(comments_votes) + " | "
         i+=1
         page.keyboard.press("PageDown")
     return [hr2, hr12, hr24, d7, mo]
