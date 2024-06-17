@@ -22,7 +22,7 @@ keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin'
             "binance",
             "sol",
             
-            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "meme_coin"
+            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "meme_coin", "coinbase", "bybit"
             ]
 
 slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot_new', 'bitcoin_cash', 'chainlink', 'near_protocol']
@@ -453,29 +453,6 @@ def do_the_do(kw):
 
 
 
-
-
-
-
-
-
 if __name__ == '__main__':
     create_table()
     # do_the_do("dogecoin")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
