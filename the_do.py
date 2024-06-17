@@ -314,7 +314,6 @@ def get_search_data(context, page, kw):
             num_comments = float(num_comments)
             num_comments = num_comments * 1000
             num_comments = int(num_comments)
-        print("num_comments: "+str(num_comments))
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
         num_votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time
@@ -358,9 +357,8 @@ def get_search_data(context, page, kw):
                 time_ago = time_ago.replace(" ", "")
         print("time_ago: "+str(time_ago))
         
-        result+="\n "+str(headline)+ " -votes:"+str(num_votes)+ " -comments:"+str(num_comments)+" \n "
-        
-        
+        # result+="\n "+str(headline)+ " -votes:"+str(num_votes)+ " -comments:"+str(num_comments)+" \n "
+        # output logic
         
         i+=1
         page.keyboard.press("PageDown")
