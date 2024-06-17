@@ -1,3 +1,4 @@
 #!/bin/sh
-python3 scrape_for_btc.py
+pkill -9 -f main.py
+nohup python3 main.py > output.log &
 
