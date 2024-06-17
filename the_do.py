@@ -380,7 +380,7 @@ def one_search_page(context, page):
             time.sleep(1)
             scrape_output =  scrape_post(context, post_link)
             if scrape_output != "try_again":
-                print('fixed ups')
+                print('fixed ups '+post_link)
             j+=1
         
         if scrape_output == "try_again":
