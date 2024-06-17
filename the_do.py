@@ -310,6 +310,12 @@ def get_search_data(context, page, kw):
         headline = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
         num_comments  = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
+        if "K" in num_comments:
+            num_comments = num_comments.replace("K", "")
+            num_comments = float(num_comments)
+            num_comments = num_comments * 1000
+            num_comments = int(num_comments)
+        print("num_comments: "+str(num_comments))
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
         num_votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time
@@ -337,6 +343,7 @@ def get_search_data(context, page, kw):
             if time_ago.endswith("ago"):
                 # english
                 time_ago = time_ago[:-4]
+                time_ago = time_ago.replace(" ", "")
             elif time_ago.startswith("vor"):
                 # german
                 time_ago = time_ago[4:]
@@ -348,6 +355,8 @@ def get_search_data(context, page, kw):
                 time_ago = time_ago.replace(" Monat", "mo")
                 time_ago = time_ago.replace(" Jahren", "y")
                 time_ago = time_ago.replace(" Jahr", "y")
+                time_ago = time_ago.replace(".", "")
+                time_ago = time_ago.replace(" ", "")
         print("time_ago: "+str(time_ago))
         
         i+=1
