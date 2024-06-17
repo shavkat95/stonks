@@ -266,7 +266,7 @@ def scrape_post(context, url):
     except:
         print('ups 1')
         try:
-            time.sleep(10)
+            time.sleep(1)
             pages = context.pages
             for i in range(1, len(pages)):
                 pages[i].close()
@@ -374,8 +374,6 @@ def one_search_page(context, page):
             if len(pages) > 1:
                 for i in range(1, len(pages)):
                     pages[i].close()
-            time.sleep(1)
-            # page.reload()
             time.sleep(1)
             scroll_to_bottom(page)
             time.sleep(1)
