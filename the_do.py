@@ -87,7 +87,7 @@ def evaluate_in_page(page, xpath):
     # browser = p.chromium.launch(headless = not debug)    
     # page = browser.new_page()
     # page.goto (url)
-    # page.wait_for_load_state("networkidle")
+    page.wait_for_load_state('domcontentloaded')
     extract_tweet_javascript = """
             try
             {
@@ -178,7 +178,6 @@ def juan_scroll(page):
     time.sleep(SCROLL_PAUSE_TIME)
     # page.wait_for_load_state() # sounds good, doesnt work
 
-
 def scroll_to_bottom(page):
     for _ in range(3):
         juan_scroll(page)
@@ -258,18 +257,18 @@ def read_comments(page):
     
     return [comments, comments_votes]
 
-def scrape_post(context, url):
+def scrape_post(context, url, base_url):
     time.sleep(SCROLL_PAUSE_TIME)
     
     try:
-        
         page = context.new_page()
         page.goto(url)
     except:
         print('ups 1')
         try:
-            time.sleep(5)
-            page.close()
+            time.sleep(100)
+            [_, page] = context.pages
+            time.sleep(100)
             page = context.new_page()
             page.goto(url)
         except:
@@ -280,12 +279,12 @@ def scrape_post(context, url):
     # page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
     
     #see if loaded
-    error_div = evaluate_in_page(page, "/html/body/shreddit-app/shreddit-forbidden")
+    error_div = evaluate_in_page(page, "//shreddit-forbidden")
     test_div = evaluate_in_page(page, "/html/body/shreddit-app/div/div[1]/div/main/shreddit-post//div[2]")
-    test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app/div/div[1]/div/div/aside")
+    test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app/div/div[2]/reddit-sidebar-nav/nav")
     if error_div or not (test_div and test_div_2):
-        time.sleep(5)
         print('ups 2')
+        time.sleep(10)
         page.close()
         page = context.new_page()
         page.goto(url)
@@ -307,7 +306,7 @@ def scrape_post(context, url):
     page.close()
     return [post_text, post_comments, comments_votes]
 
-def one_search_page(context, page):
+def one_search_page(context, page, base_url):
     scroll_to_bottom(page)
     
     # - keyword
@@ -334,7 +333,11 @@ def one_search_page(context, page):
             num_comments = num_comments.replace("K", "")
             num_comments = float(num_comments)
             num_comments = num_comments * 1000
-            num_comments = int(num_comments)
+            try:
+                num_comments = int(num_comments)
+            except ValueError:
+                num_comments = num_comments.replace(".", "")
+                num_comments = int(num_comments)
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
         num_votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time
@@ -343,7 +346,7 @@ def one_search_page(context, page):
         post_link = page.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').get_attribute('href')
         post_link = "https://www.reddit.com"+str(post_link)
         
-        [post_text, post_comments, comments_votes] = scrape_post(context, post_link)
+        [post_text, post_comments, comments_votes] = scrape_post(context, post_link, base_url)
         
         # considering only active older posts 
         activity = int(num_comments)+int(num_votes)
@@ -427,11 +430,11 @@ def get_search_data(context, page, kw):
     # return list with data to keyword search
 
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
-    [hr2, hr12, hr24, d7, mo] = one_search_page(context, page)
+    [hr2, hr12, hr24, d7, mo] = one_search_page(context, page, f'https://www.reddit.com/search/?q={kw}&sort=new')
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
-    hot = one_search_page(context, page)
+    hot = one_search_page(context, page, f'https://www.reddit.com/search/?q={kw}&sort=hot')
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
-    relevant = one_search_page(context, page)
+    relevant = one_search_page(context, page, f'https://www.reddit.com/search/?q={kw}&sort=relevance')
     
     #output logic
     hr2["headlines"]+=hot[0]["headlines"] + relevant[0]["headlines"]
