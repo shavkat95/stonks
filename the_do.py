@@ -303,14 +303,13 @@ def get_search_data(context, page, kw):
     # comment_counts = ""
     # comments_votes = ""
 
-    result = ''
     i = 1
     while True:
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
         headline = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
         num_comments  = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
-        if "K" in num_comments:
+        if "K" in num_comments: #for the english
             num_comments = num_comments.replace("K", "")
             num_comments = float(num_comments)
             num_comments = num_comments * 1000
@@ -359,9 +358,11 @@ def get_search_data(context, page, kw):
                 time_ago = time_ago.replace(" ", "")
         print("time_ago: "+str(time_ago))
         
-        i+=1
         result+="\n "+str(headline)+ " -votes:"+str(num_votes)+ " -comments:"+str(num_comments)+" \n "
         
+        
+        
+        i+=1
         page.keyboard.press("PageDown")
     return [hr2, hr12, hr24, d7]
         
