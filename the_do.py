@@ -266,7 +266,7 @@ def scrape_post(context, url, base_url):
     except:
         print('ups 1')
         try:
-            time.sleep(100)
+            time.sleep(10)
             pages = context.pages
             for i in range(1, len(pages)):
                 pages[i].close()
@@ -274,7 +274,8 @@ def scrape_post(context, url, base_url):
             page.goto(url)
         except:
             print('could not scrape post: '+url)
-            return [" | ", " | ", 0]
+            print('trying again')
+            return "try_again"
     
     # page.wait_for_load_state()
     # page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
@@ -367,12 +368,18 @@ def one_search_page(context, page, base_url):
             for i in range(1, len(pages)):
                 pages[i].close()
         
-        [post_text, post_comments, comments_votes] = scrape_post(context, post_link, base_url)
+        scrape_output =  scrape_post(context, post_link, base_url)
+        while scrape_output == "try_again":
+            pages = context.pages
+            if len(pages) > 1:
+                for i in range(1, len(pages)):
+                    pages[i].close()
+            scrape_output =  scrape_post(context, post_link, base_url)
+        
+        [post_text, post_comments, comments_votes] = scrape_output
         
         # considering only active older posts 
         activity = int(float(num_comments))+int(float(num_comments))
-        
-
         
         # we work with text-value instead of original datetime:
         if time_ago != False:
