@@ -44,8 +44,13 @@ def create_table():
     sql_statements = [ 
         """DROP TABLE IF EXISTS the_do;""",
         """CREATE TABLE the_do (
-                id TEXT PRIMARY KEY
+                id TEXT
         );"""]
+    
+    execute_sql(sql_statements)
+    
+    sql_statements = [ 
+        """CREATE UNIQUE INDEX idx ON the_do (id)""",] # not sure about best practices here
     
     execute_sql(sql_statements)
     
@@ -56,7 +61,7 @@ def create_table():
     # - - - headlines, texts, votes, comments, comment counts, comment votes
     
     for kw in keywords:
-        for interval in ["_2hr_", "_12hr_", "_24hr_", "_7d_"]:
+        for interval in ["_2hr_", "_12hr_", "_3d_", "_7d_", "_mo_"]:
             for col in ["headlines", "texts", "votes", "comments", "comment_counts", "comment_votes"]:
                 sql_statements.append(f"""ALTER TABLE the_do ADD {str(kw)+str(interval)+str(col)} TEXT;""")
     
@@ -149,7 +154,6 @@ def get_comment_votes(page, i, j = False, k = False, l = False, m = False):
         """
     result = page.evaluate(extract_tweet_javascript.replace("$jsPath", jsPath)) 
     return result
-
 
 def juan_scroll(page):
     page.keyboard.press("PageDown")
@@ -275,16 +279,8 @@ def scrape_post(context, url):
     
     page.close()
     return [post_text, post_comments, comments_votes]
-        
-def get_search_data(context, page, kw):
-    # return list with data to keyword search
 
-    # page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
-    # page.goto(f'https://www.reddit.com/search/?q={kw}')
-    
-    # also interesting:
-    page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
-    
+def one_search_page(context, page):
     scroll_to_bottom(page)
     
     # - keyword
@@ -295,18 +291,13 @@ def get_search_data(context, page, kw):
     hr12 = {"headlines": "", "texts": "", "votes": "", "comments": "", "comment_counts": "", "comment_votes": ""}
     hr24 = {"headlines": "", "texts": "", "votes": "", "comments": "", "comment_counts": "", "comment_votes": ""}
     d7 = {"headlines": "", "texts": "", "votes": "", "comments": "", "comment_counts": "", "comment_votes": ""}
-    
-    # headlines = ""
-    # texts = ""
-    # votes = ""
-    # comments = ""
-    # comment_counts = ""
-    # comments_votes = ""
+    mo = {"headlines": "", "texts": "", "votes": "", "comments": "", "comment_counts": "", "comment_votes": ""}
 
     i = 1
     while True:
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
         headline = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
+        headline = headline.strip()
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number
         num_comments  = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[1]/faceplate-number")
         if "K" in num_comments: #for the english
@@ -327,14 +318,10 @@ def get_search_data(context, page, kw):
         # considering only active older posts 
         activity = int(num_comments)+int(num_votes)
         
-        # sleep_random()
-        # time.sleep(20)
-        # sys.exit(0)
         if headline == False:
-            print('\n bad bad at - '+str(i))
+            # print('\n bad bad at - '+str(i))
             break
         
-        print("\n time_ago: "+str(time_ago))
         # we work with text-value instead of original datetime:
         if time_ago != False:
             time_ago = str(time_ago)
@@ -355,23 +342,111 @@ def get_search_data(context, page, kw):
                 time_ago = time_ago.replace(" Jahr", "y")
                 time_ago = time_ago.replace(".", "")
                 time_ago = time_ago.replace(" ", "")
-        print("time_ago: "+str(time_ago))
         
-        # result+="\n "+str(headline)+ " -votes:"+str(num_votes)+ " -comments:"+str(num_comments)+" \n "
         # output logic
-        
+        if time_ago.endswith("d"):
+            if activity > 5:
+                d7["headlines"]+=headline + " | "
+                d7["texts"]+=post_text + " | "
+                d7["votes"]+=num_votes + " | "
+                d7["comments"]+=post_comments + " | "
+                d7["comment_counts"]+=num_comments + " | "
+                d7["comment_votes"]+=comments_votes + " | "
+        elif time_ago.endswith("m"):
+            hr2["headlines"]+=headline + " | "
+            hr2["texts"]+=post_text + " | "
+            hr2["votes"]+=num_votes + " | "
+            hr2["comments"]+=post_comments + " | "
+            hr2["comment_counts"]+=num_comments + " | "
+            hr2["comment_votes"]+=comments_votes + " | "                
+        elif time_ago.endswith("h"):
+            if int(time_ago[:-1])<=2:
+                hr2["headlines"]+=headline + " | "
+                hr2["texts"]+=post_text + " | "
+                hr2["votes"]+=num_votes + " | "
+                hr2["comments"]+=post_comments + " | "
+                hr2["comment_counts"]+=num_comments + " | "
+                hr2["comment_votes"]+=comments_votes + " | "    
+            elif int(time_ago[:-1])<=12:
+                if activity > 5:
+                    hr12["headlines"]+=headline + " | "
+                    hr12["texts"]+=post_text + " | "
+                    hr12["votes"]+=num_votes + " | "
+                    hr12["comments"]+=post_comments + " | "
+                    hr12["comment_counts"]+=num_comments + " | "
+                    hr12["comment_votes"]+=comments_votes + " | "                                
+            else:
+                if activity > 4:
+                    hr24["headlines"]+=headline + " | "
+                    hr24["texts"]+=post_text + " | "
+                    hr24["votes"]+=num_votes + " | "
+                    hr24["comments"]+=post_comments + " | "
+                    hr24["comment_counts"]+=num_comments + " | "
+                    hr24["comment_votes"]+=comments_votes + " | "
+        elif time_ago.endswith("mo"):
+                mo["headlines"]+=headline + " | "
+                mo["texts"]+=post_text + " | "
+                mo["votes"]+=num_votes + " | "
+                mo["comments"]+=post_comments + " | "
+                mo["comment_counts"]+=num_comments + " | "
+                mo["comment_votes"]+=comments_votes + " | "
         i+=1
         page.keyboard.press("PageDown")
-    return [hr2, hr12, hr24, d7]
+    return [hr2, hr12, hr24, d7, mo]
+   
+def get_search_data(context, page, kw):
+    # return list with data to keyword search
+
+    page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
+    [hr2, hr12, hr24, d7, mo] = one_search_page(context, page)
+    page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
+    hot = one_search_page(context, page)
+    page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
+    relevant = one_search_page(context, page)
+    
+    #output logic
+    hr2["headlines"]+=hot[0]["headlines"] + relevant[0]["headlines"]
+    hr2["texts"]+=hot[0]["texts"] + relevant[0]["texts"]
+    hr2["votes"]+=hot[0]["votes"] + relevant[0]["votes"]
+    hr2["comments"]+=hot[0]["comments"] + relevant[0]["comments"]
+    hr2["comment_counts"]+=hot[0]["comment_counts"] + relevant[0]["comment_counts"]
+    hr2["comment_votes"]+=hot[0]["comment_votes"] + relevant[0]["comment_votes"]  
+    hr12["headlines"]+=hot[1]["headlines"] + relevant[1]["headlines"]
+    hr12["texts"]+=hot[1]["texts"] + relevant[1]["texts"]
+    hr12["votes"]+=hot[1]["votes"] + relevant[1]["votes"]
+    hr12["comments"]+=hot[1]["comments"] + relevant[1]["comments"]
+    hr12["comment_counts"]+=hot[1]["comment_counts"] + relevant[1]["comment_counts"]
+    hr12["comment_votes"]+=hot[1]["comment_votes"] + relevant[1]["comment_votes"]  
+    hr24["headlines"]+=hot[2]["headlines"] + relevant[2]["headlines"]
+    hr24["texts"]+=hot[2]["texts"] + relevant[2]["texts"]
+    hr24["votes"]+=hot[2]["votes"] + relevant[2]["votes"]
+    hr24["comments"]+=hot[2]["comments"] + relevant[2]["comments"]
+    hr24["comment_counts"]+=hot[2]["comment_counts"] + relevant[2]["comment_counts"]
+    hr24["comment_votes"]+=hot[2]["comment_votes"] + relevant[2]["comment_votes"]  
+    d7["headlines"]+=hot[3]["headlines"] + relevant[3]["headlines"]
+    d7["texts"]+=hot[3]["texts"] + relevant[3]["texts"]
+    d7["votes"]+=hot[3]["votes"] + relevant[3]["votes"]
+    d7["comments"]+=hot[3]["comments"] + relevant[3]["comments"]
+    d7["comment_counts"]+=hot[3]["comment_counts"] + relevant[3]["comment_counts"]
+    d7["comment_votes"]+=hot[3]["comment_votes"] + relevant[3]["comment_votes"]  
+    mo["headlines"]+=hot[4]["headlines"] + relevant[4]["headlines"]
+    mo["texts"]+=hot[4]["texts"] + relevant[4]["texts"]
+    mo["votes"]+=hot[4]["votes"] + relevant[4]["votes"]
+    mo["comments"]+=hot[4]["comments"] + relevant[4]["comments"]
+    mo["comment_counts"]+=hot[4]["comment_counts"] + relevant[4]["comment_counts"]
+    mo["comment_votes"]+=hot[4]["comment_votes"] + relevant[4]["comment_votes"]  
+    
+    return [hr2, hr12, hr24, d7, mo]
         
-def do_the_do():
+def do_the_do(kw):
     # for all keywords, get the lists + price-change data per token -> write to table
     with sync_playwright() as p:
         browser = p.chromium.launch(headless = headless)
         context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81")
         page = context.new_page()
-        get_search_data(context, page, "bitcoin")
-    return
+        [hr2, hr12, hr24, d7, mo] = get_search_data(context, page, kw)
+    
+    return [hr2, hr12, hr24, d7, mo]
 
 
 
@@ -386,7 +461,7 @@ def do_the_do():
 
 if __name__ == '__main__':
     create_table()
-    do_the_do()
+    # do_the_do("dogecoin")
 
 
 

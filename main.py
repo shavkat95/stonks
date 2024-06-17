@@ -9,10 +9,9 @@
 from datetime import time
 import datetime
 from time import sleep
-import pandas as pd
-import csv
-from scrape_for_btc import scrape_reddit_btc
 import sqlite3
+import the_do
+import cmc
 
 def act(x):
     return x+10
@@ -79,33 +78,55 @@ def run_sql_statements(statements):
     except sqlite3.Error as e:
         print(e)
         
-        
-
-def get_row(nh):
-    print('getting row')
-    if nh == '00:00':
-        date = datetime.datetime.today() + datetime.timedelta(days=1)
-    else:
-        date = datetime.datetime.today()
-    id = str(date)+' - '+str(nh)
-    btc_reddit_headlines = scrape_reddit_btc()
-    sql_statements = [ 
-        f"""INSERT INTO the_do (id, BTC_R)
-            VALUES ({id},{btc_reddit_headlines});""",
-        ]
-    run_sql_statements(sql_statements)
-    return [id, btc_reddit_headlines]
 
 def wait_next_full_hour(nh = None, action=None):
     if nh==None:
         nh = get_next_full_hour()
-    if nh == '00:00':
-        date = datetime.datetime.today() + datetime.timedelta(days=1)
-    else:
-        date = datetime.datetime.today()
-    id = str(date)[:10]+'-'+str(nh)
-    print(id)
     return wait_until(nh, action)
+
+
+def get_row(nh):
+    reddit = {}
+    
+    # create id
+    date = datetime.datetime.today()
+    id = str(date)+' - '+str(nh)
+    
+    # get scraping data
+    for kw in the_do.keywords:
+        reddit[kw] = the_do.do_the_do(kw)
+    
+    # get price change data
+    metrics = cmc.get_metrics()
+    
+    # write to db
+    
+    # new row
+    sql_statements = [ 
+        f"""INSERT INTO the_do (id)
+            VALUES ({id});""",
+        ]
+    run_sql_statements(sql_statements)
+    
+    sql_statements = []
+    for kw, list_1 in reddit.items():
+        # [hr2, hr12, hr24, d7, mo] = list_1
+        i = 0
+        for interval in ["_2hr_", "_12hr_", "_3d_", "_7d_", "_mo_"]:
+            for col in ["headlines", "texts", "votes", "comments", "comment_counts", "comment_votes"]:
+                sql_statements.append(f"""REPLACE INTO the_do (id, {str(kw)+str(interval)+str(col)}) VALUES({id}, {list_1[i][col]});""")
+            i+=1
+    run_sql_statements(sql_statements)
+    
+    sql_statements = []
+    for met_ in cmc.metrics:
+        if not metrics[met_]:
+            print("ERROR 28")
+            exit()
+        sql_statements.append(f"""REPLACE INTO the_do (id, {met_}) VALUES({id}, {metrics[met_]});""")
+        
+    return id
+
 
 
 
@@ -115,15 +136,5 @@ while True:
     wait_next_full_hour(nh = nh, action=get_row)
     
     
-
-# open the file in the write mode
-f = open('csv_file.csv', 'w')
-
-# create the csv writer
-writer = csv.writer(f)
-
-# write a row to the csv file
-writer.writerow(['eins', 'zwo'])
-
-# close the file
-f.close()
+    
+    
