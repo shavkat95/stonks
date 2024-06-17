@@ -90,7 +90,7 @@ def get_row(nh):
     id = str(date)+' - '+str(nh)
     btc_reddit_headlines = scrape_reddit_btc()
     sql_statements = [ 
-        f"""INSERT INTO table_name (id, BTC_R)
+        f"""INSERT INTO the_do (id, BTC_R)
             VALUES ({id},{btc_reddit_headlines});""",
         ]
     run_sql_statements(sql_statements)
