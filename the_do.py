@@ -264,7 +264,7 @@ def scrape_post(context, url):
         page = context.new_page()
         page.goto(url)
     except:
-        print('ups 1')
+        print('ups 1 '+url)
         try:
             time.sleep(1)
             pages = context.pages
@@ -273,7 +273,6 @@ def scrape_post(context, url):
             page = context.new_page()
             page.goto(url)
         except:
-            print('could not scrape post: '+url)
             print('trying again')
             return "try_again"
     
@@ -286,7 +285,8 @@ def scrape_post(context, url):
     test_div = evaluate_in_page(page, "/html/body/shreddit-app/div/div[1]/div/main/shreddit-post//div[2]")
     test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app/div/div[2]/reddit-sidebar-nav/nav")
     if error_div or not (test_div and test_div_2):
-        print('ups 2')
+        print('ups 2 | trying again'+url)
+        return 'try_again'
         time.sleep(5)
         page.close()
         page = context.new_page()
@@ -369,7 +369,8 @@ def one_search_page(context, page):
                 pages[i].close()
         
         scrape_output =  scrape_post(context, post_link)
-        while scrape_output == "try_again": # it's bugged idk
+        j = 0
+        while scrape_output == "try_again" and j<5: # it's bugged idk
             pages = context.pages
             if len(pages) > 1:
                 for i in range(1, len(pages)):
@@ -378,6 +379,13 @@ def one_search_page(context, page):
             scroll_to_bottom(page)
             time.sleep(1)
             scrape_output =  scrape_post(context, post_link)
+            if scrape_output != "try_again":
+                print('fixed ups')
+            j+=1
+        
+        if scrape_output == "try_again":
+            print('oopsie at '+post_link)
+            continue
         
         [post_text, post_comments, comments_votes] = scrape_output
         

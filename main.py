@@ -67,7 +67,6 @@ def wait_until(runTime, action=None):
     return action(runTime)
 
 
-
 def run_sql_statements(statements):
     try:
         with sqlite3.connect("my.db") as conn:
