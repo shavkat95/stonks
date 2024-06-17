@@ -2,3 +2,6 @@ my.db
 my.db-journal
 config.py
 output.log
+
+__pycache__/
+heiko/

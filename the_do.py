@@ -284,7 +284,7 @@ def scrape_post(context, url, base_url):
     test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app/div/div[2]/reddit-sidebar-nav/nav")
     if error_div or not (test_div and test_div_2):
         print('ups 2')
-        time.sleep(10)
+        time.sleep(5)
         page.close()
         page = context.new_page()
         page.goto(url)
@@ -335,11 +335,20 @@ def one_search_page(context, page, base_url):
             num_comments = num_comments * 1000
             try:
                 num_comments = int(num_comments)
-            except ValueError:
+            except ValueError: # this makes no sense to me, maybe there's a big here?
                 num_comments = num_comments.replace(".", "")
                 num_comments = int(num_comments)
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
         num_votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
+        if "K" in num_votes: #for the english
+            num_votes = num_votes.replace("K", "")
+            num_votes = float(num_votes)
+            num_votes = num_votes * 1000
+            try:
+                num_votes = int(num_votes)
+            except ValueError: # this makes no sense to me, maybe there's a big here?
+                num_votes = num_votes.replace(".", "")
+                num_votes = int(num_votes)
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time
         time_ago = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time")
         
