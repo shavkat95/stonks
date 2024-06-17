@@ -266,9 +266,10 @@ def scrape_post(context, url, base_url):
     except:
         print('ups 1')
         try:
-            time.sleep(100)
-            [_, page] = context.pages
-            time.sleep(100)
+            time.sleep(10)
+            pages = context.pages
+            for i in range(1, len(pages)):
+                pages[i].close()
             page = context.new_page()
             page.goto(url)
         except:
