@@ -14,7 +14,7 @@ if os.name=="posix":
     headless = True
 else:
     headless = False
-SCROLL_PAUSE_TIME = .1
+SCROLL_PAUSE_TIME = .01
 
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             "btc", 
@@ -87,7 +87,7 @@ def evaluate_in_page(page, xpath):
     # browser = p.chromium.launch(headless = not debug)    
     # page = browser.new_page()
     # page.goto (url)
-    page.wait_for_load_state('domcontentloaded')
+    
     extract_tweet_javascript = """
             try
             {
@@ -100,7 +100,7 @@ def evaluate_in_page(page, xpath):
                 element = false;
             }
             """
-    result = page.evaluate(extract_tweet_javascript.replace("$PATH", str(xpath))) 
+    result = page.evaluate(extract_tweet_javascript.replace("$PATH", str(xpath)))
     return result
 
 def get_comment_votes(page, i, j = False, k = False, l = False, m = False):
@@ -176,7 +176,7 @@ def juan_scroll(page):
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
     time.sleep(SCROLL_PAUSE_TIME)
-    # page.wait_for_load_state() # sounds good, doesnt work
+    page.wait_for_load_state('domcontentloaded')
 
 def scroll_to_bottom(page):
     for _ in range(3):
@@ -257,7 +257,7 @@ def read_comments(page):
     
     return [comments, comments_votes]
 
-def scrape_post(context, url, base_url):
+def scrape_post(context, url):
     time.sleep(SCROLL_PAUSE_TIME)
     
     try:
@@ -362,19 +362,24 @@ def one_search_page(context, page, base_url):
         post_link = page.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').get_attribute('href')
         post_link = "https://www.reddit.com"+str(post_link)
         
-        # it's bugged idk
+        
         pages = context.pages
         if len(pages) > 1:
             for i in range(1, len(pages)):
                 pages[i].close()
         
-        scrape_output =  scrape_post(context, post_link, base_url)
-        while scrape_output == "try_again":
+        scrape_output =  scrape_post(context, post_link)
+        while scrape_output == "try_again": # it's bugged idk
             pages = context.pages
             if len(pages) > 1:
                 for i in range(1, len(pages)):
                     pages[i].close()
-            scrape_output =  scrape_post(context, post_link, base_url)
+            time.sleep(1)
+            page.reload()
+            time.sleep(1)
+            scroll_to_bottom(page)
+            time.sleep(1)
+            scrape_output =  scrape_post(context, post_link)
         
         [post_text, post_comments, comments_votes] = scrape_output
         
