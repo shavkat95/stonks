@@ -339,6 +339,8 @@ def one_search_page(context, page, base_url):
             except ValueError: # this makes no sense to me, maybe there's a big here?
                 num_comments = num_comments.replace(".", "")
                 num_comments = int(num_comments)
+        else:
+            num_comments = int(num_votes.replace(".", ""))
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number
         num_votes = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[2]/span[3]/faceplate-number")
         if "K" in num_votes: #for the english
@@ -350,6 +352,8 @@ def one_search_page(context, page, base_url):
             except ValueError: # this makes no sense to me, maybe there's a big here?
                 num_votes = num_votes.replace(".", "")
                 num_votes = int(num_votes)
+        else:
+            num_votes = int(num_votes.replace(".", ""))
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time
         time_ago = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/div[1]/span/faceplate-timeago/time")
         
@@ -359,7 +363,7 @@ def one_search_page(context, page, base_url):
         [post_text, post_comments, comments_votes] = scrape_post(context, post_link, base_url)
         
         # considering only active older posts 
-        activity = int(num_comments)+int(num_votes)
+        activity = int(float(num_comments))+int(float(num_comments))
         
 
         
