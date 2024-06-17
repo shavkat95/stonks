@@ -14,7 +14,7 @@ if os.name=="posix":
     headless = True
 else:
     headless = False
-SCROLL_PAUSE_TIME = .1
+SCROLL_PAUSE_TIME = .01
 
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             "btc", 
@@ -175,15 +175,14 @@ def juan_scroll(page):
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
-    # time.sleep(SCROLL_PAUSE_TIME)
-    page.wait_for_load_state() # sounds good, doesnt work
+    time.sleep(SCROLL_PAUSE_TIME)
+    # page.wait_for_load_state() # sounds good, doesnt work
 
-def sleep_random():
-    time.sleep(random.uniform(.15, .5))
 
 def scroll_to_bottom(page):
     for _ in range(3):
         juan_scroll(page)
+    time.sleep(SCROLL_PAUSE_TIME)
 
 def read_comments(page):
     comments = ""
@@ -204,6 +203,8 @@ def read_comments(page):
     base_XPath = "/html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[$index]"
     shreddit = "/shreddit-comment[$index]"
     for i in range(1, 100):
+        if i%6 == 5:
+            scroll_to_bottom(page)
         current_comment = evaluate_in_page(page, base_XPath.replace('$index', str(i))+'/div[3]')
         if current_comment == False:
             break
@@ -258,13 +259,42 @@ def read_comments(page):
     return [comments, comments_votes]
 
 def scrape_post(context, url):
+    time.sleep(SCROLL_PAUSE_TIME)
     
-    page = context.new_page()
-    page.goto(url)
-    scroll_to_bottom(page)
-    page.wait_for_load_state()
+    try:
+        
+        page = context.new_page()
+        page.goto(url)
+    except:
+        print('ups 1')
+        try:
+            time.sleep(5)
+            page.close()
+            page = context.new_page()
+            page.goto(url)
+        except:
+            print('could not scrape post: '+url)
+            return [" | ", " | ", 0]
+    
+    # page.wait_for_load_state()
     # page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
     
+    #see if loaded
+    error_div = evaluate_in_page(page, "/html/body/shreddit-app/shreddit-forbidden")
+    test_div = evaluate_in_page(page, "/html/body/shreddit-app/div/div[1]/div/main/shreddit-post//div[2]")
+    test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app/div/div[1]/div/div/aside")
+    if error_div or not (test_div and test_div_2):
+        time.sleep(5)
+        print('ups 2')
+        page.close()
+        page = context.new_page()
+        page.goto(url)
+        error_div = evaluate_in_page(page, "/html/body/shreddit-app/shreddit-forbidden")
+        if error_div:
+            print('test_div false for '+url)
+            print('could not scrape post: '+url)
+            return [" | ", " | ", 0]
+    scroll_to_bottom(page)
     # post text
     post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
     if post_text == False: 
@@ -389,10 +419,8 @@ def one_search_page(context, page):
                 mo["comment_counts"]+=str(num_comments) + " | "
                 mo["comment_votes"]+=str(comments_votes) + " | "
         i+=1
-        print(i)
         if i%30 == 29:
             juan_scroll(page)
-            print("i%30 == 29")
     return [hr2, hr12, hr24, d7, mo]
    
 def get_search_data(context, page, kw):
