@@ -15,7 +15,7 @@ if os.name=="posix":
 else:
     headless = False
 
-headless = False #debugging on mac
+# headless = False #debugging on mac
 
 SCROLL_PAUSE_TIME = .01
 
