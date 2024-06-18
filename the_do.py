@@ -378,7 +378,7 @@ def one_search_page(context, page):
             time.sleep(10)
             print('j: '+str(j))
 
-            if j > 1:
+            if j > 0:
                 time.sleep(j)
                 page = context.new_page()
                 page.goto(page.url)
