@@ -269,7 +269,7 @@ def scrape_post(context, url):
     except:
         print('ups 1 '+url)
         try:
-            time.sleep(1)
+            time.sleep(10)
             pages = context.pages
             for i in range(1, len(pages)):
                 pages[i].close()
@@ -373,14 +373,14 @@ def one_search_page(context, page):
         scrape_output =  scrape_post(context, post_link)
         j = 0
         while scrape_output == "try_again" and j<5: # it's bugged idk
-            time.sleep(3)
+            time.sleep(10)
             pages = context.pages
             if len(pages) > 1:
                 for i in range(1, len(pages)):
                     pages[i].close()
-            time.sleep(3)
+            time.sleep(5)
             scroll_to_bottom(page)
-            time.sleep(3)
+            time.sleep(5)
             scrape_output =  scrape_post(context, post_link)
             if scrape_output != "try_again":
                 print('fixed ups '+post_link)
