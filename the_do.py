@@ -14,6 +14,9 @@ if os.name=="posix":
     headless = True
 else:
     headless = False
+
+headless = False #debugging on mac
+
 SCROLL_PAUSE_TIME = .01
 
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
@@ -285,7 +288,7 @@ def scrape_post(context, url):
     test_div = evaluate_in_page(page, "/html/body/shreddit-app/div/div[1]/div/main/shreddit-post//div[2]")
     test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app/div/div[2]/reddit-sidebar-nav/nav")
     if error_div or not (test_div and test_div_2):
-        print('ups 2 | trying again'+url)
+        print('ups 2 | trying again | '+url)
         return 'try_again'
         page.close()
         page = context.new_page()
