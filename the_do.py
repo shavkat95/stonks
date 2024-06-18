@@ -15,7 +15,7 @@ else:
 
 # headless = False #debugging on mac
 
-SCROLL_PAUSE_TIME = .17
+SCROLL_PAUSE_TIME = .37
 
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             "btc", 
@@ -374,7 +374,7 @@ def one_search_page(context, page):
         scrape_output =  scrape_post(context, post_link)
         j = 0
         while scrape_output == "try_again" and j<15: # it's bugged idk
-            time.sleep(1)
+            time.sleep(10)
 
             pages = context.pages
             if len(pages) > 1:
@@ -388,8 +388,6 @@ def one_search_page(context, page):
             scroll_to_bottom(page)
             scroll_to_bottom(page)
             scroll_to_bottom(page)
-            time.sleep(1)
-
             scrape_output =  scrape_post(context, post_link)
             if scrape_output != "try_again":
                 print('fixed ups '+post_link)

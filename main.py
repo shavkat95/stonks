@@ -133,5 +133,5 @@ def get_row(nh):
 while True:
     nh = get_next_full_hour()
     wait_next_full_hour(nh = nh, action=get_row)
-    # get_row("13:00")
+    # get_row("19:00")
     
