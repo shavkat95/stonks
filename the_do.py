@@ -24,7 +24,7 @@ keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin'
             
             "coin_exchange","crypto_exchange","binance", "coinbase", "OKX" "coinbase_exchange", "bybit", "Upbit", "Kraken", "Gate_io_Exchange", "HTX", "Bitfinex", "KuCoin", "MEXC_Exchange", "Bitget", "Crypto_com_Exchange", "Binance_TR", "BingX", 
             
-            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "meme_coin", "token_dominance"
+            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "satoshis", "meme_coin", "meme_coins", "token_dominance", "on_chain"
             ]
 
 slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot_new', 'bitcoin_cash', 'chainlink', 'near_protocol']
@@ -379,16 +379,25 @@ def one_search_page(context, page):
             print('j: '+str(j))
 
             if j > 1:
-                time.sleep(1)
+                time.sleep(j)
+                page = context.new_page()
+                page.goto(page.url)
+                time.sleep(j)
+                scroll_to_bottom(page)
+                scroll_to_bottom(page)
+                scroll_to_bottom(page)
+                time.sleep(j)
                 juan_scroll(page)
-                time.sleep(1)
+                time.sleep(j)
                 pages = context.pages
                 juan_scroll(pages[0])
-                time.sleep(1)
+                time.sleep(j)
                 if len(pages) > 1:
                     for k in range(1, len(pages)):
                         pages[k].close()
-                        time.sleep(1)
+                        time.sleep(j)
+                        
+            
             
             
             pages = context.pages
