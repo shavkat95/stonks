@@ -143,6 +143,7 @@ def get_row(nh):
 
 while True:
     nh = get_next_full_hour()
+    print('next full hour: '+nh)
     # wait_next_full_hour(nh = nh, action=get_row)
     get_row(nh)
     
