@@ -287,7 +287,6 @@ def scrape_post(context, url):
     if error_div or not (test_div and test_div_2):
         print('ups 2 | trying again'+url)
         return 'try_again'
-        time.sleep(5)
         page.close()
         page = context.new_page()
         page.goto(url)
@@ -371,13 +370,14 @@ def one_search_page(context, page):
         scrape_output =  scrape_post(context, post_link)
         j = 0
         while scrape_output == "try_again" and j<5: # it's bugged idk
+            time.sleep(3)
             pages = context.pages
             if len(pages) > 1:
                 for i in range(1, len(pages)):
                     pages[i].close()
-            time.sleep(1)
+            time.sleep(3)
             scroll_to_bottom(page)
-            time.sleep(1)
+            time.sleep(3)
             scrape_output =  scrape_post(context, post_link)
             if scrape_output != "try_again":
                 print('fixed ups '+post_link)
