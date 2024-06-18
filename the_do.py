@@ -379,14 +379,6 @@ def one_search_page(context, page):
             print('j: '+str(j))
 
             if j > 0:
-                time.sleep(j)
-                page = context.new_page()
-                page.goto(page.url)
-                time.sleep(j)
-                scroll_to_bottom(page)
-                scroll_to_bottom(page)
-                scroll_to_bottom(page)
-                time.sleep(j)
                 juan_scroll(page)
                 time.sleep(j)
                 pages = context.pages
@@ -396,6 +388,14 @@ def one_search_page(context, page):
                     for k in range(1, len(pages)):
                         pages[k].close()
                         time.sleep(j)
+                time.sleep(j)
+                page = context.new_page()
+                page.goto(page.url)
+                time.sleep(j)
+                scroll_to_bottom(page)
+                scroll_to_bottom(page)
+                scroll_to_bottom(page)
+                time.sleep(j)
                         
             
             
