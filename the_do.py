@@ -326,6 +326,7 @@ def one_search_page(context, page):
 
     i = 1
     while True:
+        print('i on '+page.url+': '+str(i))
         # /html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[1]/post-consume-tracker/div/div/a
         headline = evaluate_in_page(page, f"/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/div/a")
         if headline == False:
@@ -367,17 +368,17 @@ def one_search_page(context, page):
         
         pages = context.pages
         if len(pages) > 1:
-            for i in range(1, len(pages)):
-                pages[i].close()
+            for k in range(1, len(pages)):
+                pages[k].close()
         
         scrape_output =  scrape_post(context, post_link)
         j = 0
-        while scrape_output == "try_again" and j<5: # it's bugged idk
+        while scrape_output == "try_again" and j<15: # it's bugged idk
             time.sleep(10)
             pages = context.pages
             if len(pages) > 1:
-                for i in range(1, len(pages)):
-                    pages[i].close()
+                for k in range(1, len(pages)):
+                    pages[k].close()
             time.sleep(5)
             scroll_to_bottom(page)
             time.sleep(5)
