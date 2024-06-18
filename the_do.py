@@ -2,8 +2,6 @@ import sqlite3
 db_filename = "my.db"
 import time
 import os
-import sys
-import random
 # pip install playwright
 # then: python -m playwright install
 from playwright.sync_api import sync_playwright
@@ -17,7 +15,7 @@ else:
 
 # headless = False #debugging on mac
 
-SCROLL_PAUSE_TIME = .01
+SCROLL_PAUSE_TIME = .17
 
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             "btc", 
@@ -262,6 +260,7 @@ def read_comments(page):
 
 def scrape_post(context, url):
     time.sleep(SCROLL_PAUSE_TIME)
+    # print(url)
     
     try:
         page = context.new_page()
@@ -371,17 +370,26 @@ def one_search_page(context, page):
             for k in range(1, len(pages)):
                 pages[k].close()
         
+        # print(str(i)+' | '+post_link)
         scrape_output =  scrape_post(context, post_link)
         j = 0
         while scrape_output == "try_again" and j<15: # it's bugged idk
-            time.sleep(5)
+            time.sleep(1)
+
             pages = context.pages
             if len(pages) > 1:
                 for k in range(1, len(pages)):
                     pages[k].close()
-            time.sleep(5)
+
+            time.sleep(1)
+            page = context.new_page()
+            page.goto(page.url)
+            time.sleep(1)
             scroll_to_bottom(page)
-            time.sleep(5)
+            scroll_to_bottom(page)
+            scroll_to_bottom(page)
+            time.sleep(1)
+
             scrape_output =  scrape_post(context, post_link)
             if scrape_output != "try_again":
                 print('fixed ups '+post_link)
