@@ -20,10 +20,11 @@ SCROLL_PAUSE_TIME = .37
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             "btc", 
             "eth",
-            "binance",
             "sol",
             
-            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "meme_coin", "coinbase", "bybit"
+            "coin_exchange","crypto_exchange","binance", "coinbase", "OKX" "coinbase_exchange", "bybit", "Upbit", "Kraken", "Gate_io_Exchange", "HTX", "Bitfinex", "KuCoin", "MEXC_Exchange", "Bitget", "Crypto_com_Exchange", "Binance_TR", "BingX", 
+            
+            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "meme_coin", "token_dominance"
             ]
 
 slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot_new', 'bitcoin_cash', 'chainlink', 'near_protocol']
@@ -375,11 +376,26 @@ def one_search_page(context, page):
         j = 0
         while scrape_output == "try_again" and j<15: # it's bugged idk
             time.sleep(10)
+            print('j: '+str(j))
 
+            if j > 1:
+                time.sleep(1)
+                juan_scroll(page)
+                time.sleep(1)
+                pages = context.pages
+                juan_scroll(pages[0])
+                time.sleep(1)
+                if len(pages) > 1:
+                    for k in range(1, len(pages)):
+                        pages[k].close()
+                        time.sleep(1)
+            
+            
             pages = context.pages
             if len(pages) > 1:
                 for k in range(1, len(pages)):
                     pages[k].close()
+                    time.sleep(1)
 
             time.sleep(1)
             page = context.new_page()

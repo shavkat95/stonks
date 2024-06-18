@@ -88,17 +88,26 @@ def get_row(nh):
     reddit = {}
     
     # create id
+    if str(datetime.datetime.today().time())[:2] == '23':
+        print('waiting till 00:00 to write less code')
+        wait_until('00:00')
     date = datetime.datetime.today()
     id = str(date)+' - '+str(nh)
+    
+    print('doing it (reddit scraping)')
     
     # get scraping data
     for kw in the_do.keywords:
         reddit[kw] = the_do.do_the_do(kw)
+        print('\n'+kw+' done')
+    
+    print('getting cmc metrics')
     
     # get price change data
     metrics = cmc.get_metrics()
     
     # write to db
+    print('writing to db '+id)
     
     # new row
     sql_statements = [ 
@@ -115,15 +124,17 @@ def get_row(nh):
             for col in ["headlines", "texts", "votes", "comments", "comment_counts", "comment_votes"]:
                 sql_statements.append(f"""REPLACE INTO the_do (id, {str(kw)+str(interval)+str(col)}) VALUES({id}, {list_1[i][col]});""")
             i+=1
+    print('writing to db reddit data')
     run_sql_statements(sql_statements)
     
+    print('writing to db cmc data')
     sql_statements = []
     for met_ in cmc.metrics:
         if not metrics[met_]:
             print("ERROR 28")
             exit()
         sql_statements.append(f"""REPLACE INTO the_do (id, {met_}) VALUES({id}, {metrics[met_]});""")
-        
+    print('done')
     return id
 
 
@@ -132,6 +143,6 @@ def get_row(nh):
 
 while True:
     nh = get_next_full_hour()
-    wait_next_full_hour(nh = nh, action=get_row)
-    # get_row("19:00")
+    # wait_next_full_hour(nh = nh, action=get_row)
+    get_row(nh)
     
