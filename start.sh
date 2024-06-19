@@ -1,4 +1,4 @@
 #!/bin/sh
 pkill -9 -f main.py
-nohup python3 main.py > output.log &
+nohup python3 main.py > output.log 2>&1 &
 
