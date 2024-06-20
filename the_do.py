@@ -386,24 +386,24 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         time.sleep(PAUSE_TIME)
         
         j = 0
-        while scrape_output == "try_again" and j<5: # it's bugged idk
+        while scrape_output == "try_again" and j<15: # it's bugged idk
             print('j: '+str(j))
             time.sleep(j)
-            url_1 = page.url
-            close_context(context)
-            time.sleep(j)
-            page = context.new_page()
-            time.sleep(j)
-            page.goto(url_1)
-            time.sleep(j)
-            scroll_to_bottom(page)
-            scroll_to_bottom(page)
             scroll_to_bottom(page)
             time.sleep(j)
             scrape_output =  scrape_post(context, post_link)
             if scrape_output != "try_again":
                 print('fixed ups '+post_link)
+            elif j > 4:
+                url_1 = page.url
+                close_context(context)
+                page = context.new_page()
+                page.goto(url_1)
+                scroll_to_bottom(page)
+                scroll_to_bottom(page)
+                scroll_to_bottom(page)
             j+=1
+            
         
         if scrape_output == "try_again":
             print('oopsie at '+post_link)
