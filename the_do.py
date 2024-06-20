@@ -530,12 +530,14 @@ def get_search_data(context, page, kw):
     page.close()
     page = context.new_page()
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
+    scroll_to_bottom(page)
     new = one_search_page(context, page)
     if new == 'try_again':
         time.sleep(1)
         page.close()
         page = context.new_page()
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
+        scroll_to_bottom(page)
         time.sleep(1)
         new = one_search_page(context, page, PAUSE_TIME = .37)
         if new == 'try_again':
@@ -544,12 +546,14 @@ def get_search_data(context, page, kw):
     page.close()
     page = context.new_page()
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
+    scroll_to_bottom(page)
     hot = one_search_page(context, page)
     if hot == 'try_again':
         time.sleep(1)
         page.close()
         page = context.new_page()
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
+        scroll_to_bottom(page)
         time.sleep(1)
         hot = one_search_page(context, page, PAUSE_TIME = .37)
         if hot == 'try_again':
@@ -558,12 +562,14 @@ def get_search_data(context, page, kw):
     page.close()
     page = context.new_page()
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
+    scroll_to_bottom(page)
     relevant = one_search_page(context, page)
     if relevant == 'try_again':
         time.sleep(1)
         page.close()
         page = context.new_page()
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
+        scroll_to_bottom(page)
         time.sleep(1)
         relevant = one_search_page(context, page, PAUSE_TIME = .37)
         if relevant == 'try_again':
