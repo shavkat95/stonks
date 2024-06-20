@@ -15,7 +15,7 @@ else:
 
 # headless = False #debugging on mac
 
-SCROLL_PAUSE_TIME = .37
+SCROLL_PAUSE_TIME = .001
 
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             "btc", 
@@ -166,19 +166,18 @@ def juan_scroll(page):
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    page.keyboard.press("PageDown")
-    time.sleep(SCROLL_PAUSE_TIME)
     page.wait_for_load_state('domcontentloaded')
+    time.sleep(SCROLL_PAUSE_TIME)
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.keyboard.press("PageDown")
+    page.wait_for_load_state('domcontentloaded')
+    time.sleep(SCROLL_PAUSE_TIME)
 
 def scroll_to_bottom(page):
     for _ in range(3):
@@ -260,11 +259,11 @@ def read_comments(page):
     return [comments, comments_votes]
 
 def scrape_post(context, url):
-    time.sleep(SCROLL_PAUSE_TIME)
     # print(url)
     
     try:
         page = context.new_page()
+        page.wait_for_load_state('domcontentloaded')
         page.goto(url)
     except:
         print('ups 1 '+url)
@@ -273,12 +272,12 @@ def scrape_post(context, url):
             pages = context.pages
             for i in range(1, len(pages)):
                 pages[i].close()
-            page = context.new_page()
+            page.wait_for_load_state('domcontentloaded')
             page.goto(url)
             print('fixed ups 1')
         except:
             print('trying again')
-            return "try_again"
+            return "ups_1"
     
     # page.wait_for_load_state()
     # page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
@@ -286,20 +285,25 @@ def scrape_post(context, url):
     #see if loaded
     # /html/body/shreddit-app/shreddit-forbidden//icon-spoiler
     error_div = evaluate_in_page(page, "//shreddit-forbidden")
-    test_div = evaluate_in_page(page, "/html/body/shreddit-app/div/div[1]/div/main/shreddit-post//div[2]")
-    test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app/div/div[2]/reddit-sidebar-nav/nav")
+    test_div = evaluate_in_page(page, "/html/body/shreddit-app//main")
+    test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app//reddit-sidebar-nav")
     if error_div or not (test_div and test_div_2):
-        print('ups 2 | trying again | '+url)
+        if error_div:
+            print('ups 2 | error_div appeared | '+url)
+        if not test_div:
+            print('ups 2 | test_div not present | '+url)
+        if not test_div_2:
+            print('ups 2 | test_div_2 not present | '+url)
         return 'try_again'
         page.close()
-        page = context.new_page()
         page.goto(url)
         error_div = evaluate_in_page(page, "/html/body/shreddit-app/shreddit-forbidden")
         if error_div:
             print('test_div false for '+url)
             print('could not scrape post: '+url)
             return [" | ", " | ", 0]
-    scroll_to_bottom(page)
+    juan_scroll(page)
+    juan_scroll(page)
     # post text
     post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
     if post_text == False: 
@@ -312,7 +316,7 @@ def scrape_post(context, url):
     page.close()
     return [post_text, post_comments, comments_votes]
 
-def one_search_page(context, page):
+def one_search_page(context, page, PAUSE_TIME = 0):
     scroll_to_bottom(page)
     
     # - keyword
@@ -373,11 +377,23 @@ def one_search_page(context, page):
         
         # print(str(i)+' | '+post_link)
         scrape_output =  scrape_post(context, post_link)
+        
+        if scrape_output == "ups_1":
+            print('ups_1 ')
+            page_2 = context.new_page()
+            page_2.goto(page.url)
+            page.close()
+            page = page_2
+            # return 'try_again'
+            
+        
+        # for when need to slow down
+        time.sleep(PAUSE_TIME)
+        
         j = 0
-        while scrape_output == "try_again" and j<15: # it's bugged idk
-            time.sleep(10)
+        while scrape_output == "try_again" and j<5: # it's bugged idk
+            time.sleep(1)
             print('j: '+str(j))
-
             if j > 0:
                 juan_scroll(page)
                 time.sleep(j)
@@ -389,8 +405,10 @@ def one_search_page(context, page):
                         pages[k].close()
                         time.sleep(j)
                 time.sleep(j)
-                page = context.new_page()
-                page.goto(page.url)
+                url_1 = page.url
+                page.wait_for_load_state('domcontentloaded')
+                time.sleep(j)
+                page.goto(url_1)
                 time.sleep(j)
                 scroll_to_bottom(page)
                 scroll_to_bottom(page)
@@ -405,10 +423,13 @@ def one_search_page(context, page):
                 for k in range(1, len(pages)):
                     pages[k].close()
                     time.sleep(1)
-
+            time.sleep(1)
+            url_1 = page.url
+            page.close()
             time.sleep(1)
             page = context.new_page()
-            page.goto(page.url)
+            time.sleep(1)
+            page.goto(url_1)
             time.sleep(1)
             scroll_to_bottom(page)
             scroll_to_bottom(page)
@@ -420,6 +441,7 @@ def one_search_page(context, page):
         
         if scrape_output == "try_again":
             print('oopsie at '+post_link)
+            return 'try_again'
             continue
         
         [post_text, post_comments, comments_votes] = scrape_output
@@ -496,19 +518,59 @@ def one_search_page(context, page):
                 mo["comment_counts"]+=str(num_comments) + " | "
                 mo["comment_votes"]+=str(comments_votes) + " | "
         i+=1
-        if i%30 == 29:
+        if i%20 == 19:
             juan_scroll(page)
     return [hr2, hr12, hr24, d7, mo]
+
+    
    
 def get_search_data(context, page, kw):
     # return list with data to keyword search
 
+    page.close()
+    page = context.new_page()
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
-    [hr2, hr12, hr24, d7, mo] = one_search_page(context, page)
+    new = one_search_page(context, page)
+    if new == 'try_again':
+        time.sleep(1)
+        page.close()
+        page = context.new_page()
+        page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
+        time.sleep(1)
+        new = one_search_page(context, page, PAUSE_TIME = .37)
+        if new == 'try_again':
+            print("UPS ERROR")
+            exit()
+    page.close()
+    page = context.new_page()
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
     hot = one_search_page(context, page)
+    if hot == 'try_again':
+        time.sleep(1)
+        page.close()
+        page = context.new_page()
+        page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
+        time.sleep(1)
+        hot = one_search_page(context, page, PAUSE_TIME = .37)
+        if hot == 'try_again':
+            print("UPS ERROR")
+            exit()
+    page.close()
+    page = context.new_page()
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
     relevant = one_search_page(context, page)
+    if relevant == 'try_again':
+        time.sleep(1)
+        page.close()
+        page = context.new_page()
+        page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
+        time.sleep(1)
+        relevant = one_search_page(context, page, PAUSE_TIME = .37)
+        if relevant == 'try_again':
+            print("UPS ERROR")
+            exit()
+        
+    [hr2, hr12, hr24, d7, mo] =  new
     
     #output logic
     hr2["headlines"]+=hot[0]["headlines"] + relevant[0]["headlines"]
