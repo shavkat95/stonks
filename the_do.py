@@ -265,6 +265,7 @@ def scrape_post(context, url):
         page = context.new_page()
         page.wait_for_load_state('domcontentloaded')
         page.goto(url)
+        scroll_to_bottom(page)
     except:
         print('ups 1 '+url)
         try:
