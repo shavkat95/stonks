@@ -180,7 +180,7 @@ def juan_scroll(page):
     time.sleep(SCROLL_PAUSE_TIME)
 
 def scroll_to_bottom(page):
-    for _ in range(3):
+    for _ in range(5):
         juan_scroll(page)
     time.sleep(SCROLL_PAUSE_TIME)
 
@@ -295,15 +295,7 @@ def scrape_post(context, url):
         if not test_div_2:
             print('ups 2 | test_div_2 not present | '+url)
         return 'try_again'
-        page.close()
-        page.goto(url)
-        error_div = evaluate_in_page(page, "/html/body/shreddit-app/shreddit-forbidden")
-        if error_div:
-            print('test_div false for '+url)
-            print('could not scrape post: '+url)
-            return [" | ", " | ", 0]
-    juan_scroll(page)
-    juan_scroll(page)
+    scroll_to_bottom(page)
     # post text
     post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
     if post_text == False: 
@@ -380,10 +372,13 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         
         if scrape_output == "ups_1":
             print('ups_1 ')
-            page_2 = context.new_page()
-            page_2.goto(page.url)
-            page.close()
-            page = page_2
+            ulr_1 = page.url
+            close_context(context)
+            page = context.new_page()
+            page.goto(ulr_1)
+            scroll_to_bottom(page)
+            scroll_to_bottom(page)
+            scroll_to_bottom(page)
             # return 'try_again'
             
         
@@ -392,48 +387,19 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         
         j = 0
         while scrape_output == "try_again" and j<5: # it's bugged idk
-            time.sleep(1)
             print('j: '+str(j))
-            if j > 0:
-                juan_scroll(page)
-                time.sleep(j)
-                pages = context.pages
-                juan_scroll(pages[0])
-                time.sleep(j)
-                if len(pages) > 1:
-                    for k in range(1, len(pages)):
-                        pages[k].close()
-                        time.sleep(j)
-                time.sleep(j)
-                url_1 = page.url
-                page.wait_for_load_state('domcontentloaded')
-                time.sleep(j)
-                page.goto(url_1)
-                time.sleep(j)
-                scroll_to_bottom(page)
-                scroll_to_bottom(page)
-                scroll_to_bottom(page)
-                time.sleep(j)
-                        
-            
-            
-            
-            pages = context.pages
-            if len(pages) > 1:
-                for k in range(1, len(pages)):
-                    pages[k].close()
-                    time.sleep(1)
-            time.sleep(1)
+            time.sleep(j)
             url_1 = page.url
-            page.close()
-            time.sleep(1)
+            close_context(context)
+            time.sleep(j)
             page = context.new_page()
-            time.sleep(1)
+            time.sleep(j)
             page.goto(url_1)
-            time.sleep(1)
+            time.sleep(j)
             scroll_to_bottom(page)
             scroll_to_bottom(page)
             scroll_to_bottom(page)
+            time.sleep(j)
             scrape_output =  scrape_post(context, post_link)
             if scrape_output != "try_again":
                 print('fixed ups '+post_link)
@@ -442,7 +408,6 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         if scrape_output == "try_again":
             print('oopsie at '+post_link)
             return 'try_again'
-            continue
         
         [post_text, post_comments, comments_votes] = scrape_output
         
