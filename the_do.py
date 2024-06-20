@@ -285,15 +285,9 @@ def scrape_post(context, url):
     #see if loaded
     # /html/body/shreddit-app/shreddit-forbidden//icon-spoiler
     error_div = evaluate_in_page(page, "//shreddit-forbidden")
-    test_div = evaluate_in_page(page, "/html/body/shreddit-app//main")
-    test_div_2 = evaluate_in_page(page, "/html/body/shreddit-app//reddit-sidebar-nav")
-    if error_div or not (test_div and test_div_2):
+    if error_div:
         if error_div:
             print('ups 2 | error_div appeared | '+url)
-        if not test_div:
-            print('ups 2 | test_div not present | '+url)
-        if not test_div_2:
-            print('ups 2 | test_div_2 not present | '+url)
         return 'try_again'
     scroll_to_bottom(page)
     # post text
