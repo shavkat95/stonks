@@ -522,6 +522,13 @@ def one_search_page(context, page, PAUSE_TIME = 0):
             juan_scroll(page)
     return [hr2, hr12, hr24, d7, mo]
 
+
+def close_context(context):
+    pages = context.pages
+    if len(pages) > 0:
+        for k in range(0, len(pages)):
+            pages[k].close()
+    
     
    
 def get_search_data(context, page, kw):
@@ -534,8 +541,7 @@ def get_search_data(context, page, kw):
     new = one_search_page(context, page)
     if new == 'try_again':
         time.sleep(1)
-        page.close()
-        page.wait_for_load_state('domcontentloaded')
+        close_context(context)
         page = context.new_page()
         page.wait_for_load_state('domcontentloaded')
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
@@ -545,8 +551,7 @@ def get_search_data(context, page, kw):
         if new == 'try_again':
             print("UPS ERROR")
             exit()
-    page.close()
-    page.wait_for_load_state('domcontentloaded')
+    close_context(context)
     page = context.new_page()
     page.wait_for_load_state('domcontentloaded')
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
@@ -554,8 +559,7 @@ def get_search_data(context, page, kw):
     hot = one_search_page(context, page)
     if hot == 'try_again':
         time.sleep(1)
-        page.close()
-        page.wait_for_load_state('domcontentloaded')
+        close_context(context)
         page = context.new_page()
         page.wait_for_load_state('domcontentloaded')
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
@@ -565,8 +569,7 @@ def get_search_data(context, page, kw):
         if hot == 'try_again':
             print("UPS ERROR")
             exit()
-    page.close()
-    page.wait_for_load_state('domcontentloaded')
+    close_context(context)
     page = context.new_page()
     page.wait_for_load_state('domcontentloaded')
     page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
@@ -574,8 +577,7 @@ def get_search_data(context, page, kw):
     relevant = one_search_page(context, page)
     if relevant == 'try_again':
         time.sleep(1)
-        page.close()
-        page.wait_for_load_state('domcontentloaded')
+        close_context(context)
         page = context.new_page()
         page.wait_for_load_state('domcontentloaded')
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
