@@ -254,7 +254,6 @@ def read_comments(page):
                             comments_votes += current_vote
                         comments += '\n > > > >'+current_comment.replace("\n", "").replace("                ", "")
     
-    # time.sleep(500)
     
     return [comments, comments_votes]
 
@@ -268,29 +267,17 @@ def scrape_post(context, url):
         scroll_to_bottom(page)
     except:
         print('ups 1 '+url)
-        try:
-            time.sleep(10)
-            pages = context.pages
-            for i in range(1, len(pages)):
-                pages[i].close()
-            page.wait_for_load_state('domcontentloaded')
-            page.goto(url)
-            print('fixed ups 1')
-        except:
-            print('trying again')
-            return "ups_1"
-    
-    # page.wait_for_load_state()
-    # page_two.locator(f'xpath=/html/body/shreddit-app/search-dynamic-id-cache-controller/div/div/div[1]/div[2]/main/div/reddit-feed/faceplate-tracker[{i}]/post-consume-tracker/div/faceplate-tracker/h2/a').click()
-    
-    #see if loaded
-    # /html/body/shreddit-app/shreddit-forbidden//icon-spoiler
+        return "ups_1"
+            
+    # see if loaded correctly
     error_div = evaluate_in_page(page, "//shreddit-forbidden")
     if error_div:
         if error_div:
             print('ups 2 | error_div appeared | '+url)
         return 'try_again'
+    
     scroll_to_bottom(page)
+    
     # post text
     post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
     if post_text == False: 
