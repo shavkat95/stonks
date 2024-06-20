@@ -376,11 +376,14 @@ def one_search_page(context, page, PAUSE_TIME = 0):
             scrape_output =  scrape_post(context, post_link)
             if scrape_output != "try_again":
                 print('fixed ups '+post_link)
-            elif j > 4:
+            elif j > 1:
                 url_1 = page.url
                 close_context(context)
+                time.sleep(j)
                 page = context.new_page()
+                time.sleep(j)
                 page.goto(url_1)
+                time.sleep(j)
                 scroll_to_bottom(page)
                 scroll_to_bottom(page)
                 scroll_to_bottom(page)
