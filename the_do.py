@@ -21,7 +21,7 @@ keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin'
             "btc", 
             "eth",
             
-            "coin_exchange","crypto_exchange","binance", "coinbase", "OKX" "coinbase_exchange", "bybit", "Upbit", "Kraken", "Gate_io_Exchange", "HTX", "Bitfinex", "KuCoin", "MEXC_Exchange", "Bitget", "Crypto_com_Exchange", "Binance_TR", "BingX", 
+            "coin_exchange","crypto_exchange","binance", "coinbase", "OKX", "coinbase_exchange", "bybit", "Upbit", "Kraken", "Gate_io_Exchange", "HTX", "Bitfinex", "KuCoin", "MEXC_Exchange", "Bitget", "Crypto_com_Exchange", "Binance_TR", "BingX", 
             
             "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "satoshis", "meme_coin", "meme_coins", "token_dominance", "on_chain"
             ]
