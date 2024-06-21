@@ -353,15 +353,13 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         scrape_output =  scrape_post(context, post_link)
         
         if scrape_output == "ups_1":
-            ulr_1 = page.url
+            url_1 = page.url
             close_context(context)
             page = context.new_page()
-            page.goto(ulr_1)
+            page.goto(url_1)
             scroll_to_bottom(page)
             scroll_to_bottom(page)
             scroll_to_bottom(page)
-            # return 'try_again'
-            
         
         # for when need to slow down
         time.sleep(PAUSE_TIME)
@@ -369,7 +367,7 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         j = 0
         while scrape_output == "try_again" and j<15: # it's bugged idk
             print('j: '+str(j))
-            time.sleep(j)
+            time.sleep(5)
             scroll_to_bottom(page)
             scrape_output =  scrape_post(context, post_link)
             if scrape_output != "try_again":
