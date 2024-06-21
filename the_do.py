@@ -345,7 +345,7 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         
         j = 0
         while scrape_output == "try_again" and j<15: # it's bugged idk
-            print('j: '+str(j))
+            # print('j: '+str(j))
             time.sleep(j+1)
             url_1 = page.url
             close_context(context)
