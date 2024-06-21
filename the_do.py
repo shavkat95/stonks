@@ -20,7 +20,6 @@ SCROLL_PAUSE_TIME = .01
 keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             "btc", 
             "eth",
-            "sol",
             
             "coin_exchange","crypto_exchange","binance", "coinbase", "OKX" "coinbase_exchange", "bybit", "Upbit", "Kraken", "Gate_io_Exchange", "HTX", "Bitfinex", "KuCoin", "MEXC_Exchange", "Bitget", "Crypto_com_Exchange", "Binance_TR", "BingX", 
             
@@ -167,7 +166,6 @@ def juan_scroll(page):
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
     page.wait_for_load_state('domcontentloaded')
-    time.sleep(SCROLL_PAUSE_TIME)
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
@@ -177,7 +175,6 @@ def juan_scroll(page):
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
     page.wait_for_load_state('domcontentloaded')
-    time.sleep(SCROLL_PAUSE_TIME)
 
 def scroll_to_bottom(page):
     for _ in range(5):
@@ -203,8 +200,8 @@ def read_comments(page):
     base_XPath = "/html/body/shreddit-app/div/div[1]/div/main/div/faceplate-batch/shreddit-comment-tree/shreddit-comment[$index]"
     shreddit = "/shreddit-comment[$index]"
     for i in range(1, 100):
-        if i%6 == 5:
-            scroll_to_bottom(page)
+        if i%5 == 4:
+            juan_scroll(page)
         current_comment = evaluate_in_page(page, base_XPath.replace('$index', str(i))+'/div[3]')
         if current_comment == False:
             break
@@ -264,10 +261,10 @@ def scrape_post(context, url):
         page = context.new_page()
         page.wait_for_load_state('domcontentloaded')
         page.goto(url)
-        scroll_to_bottom(page)
+        juan_scroll(page)
     except:
         print('ups 1 '+url)
-        return "ups_1"
+        return "try_again"
             
     # see if loaded correctly
     error_div = evaluate_in_page(page, "//shreddit-forbidden")
@@ -276,7 +273,7 @@ def scrape_post(context, url):
             print('ups 2 | error_div appeared | '+url)
         return 'try_again'
     
-    scroll_to_bottom(page)
+    juan_scroll(page)
     
     # post text
     post_text = evaluate_in_page(page, f"/html/body/shreddit-app/div/div[1]/div/main/shreddit-post/div[2]/div/div/p")
@@ -291,6 +288,7 @@ def scrape_post(context, url):
     return [post_text, post_comments, comments_votes]
 
 def one_search_page(context, page, PAUSE_TIME = 0):
+    time.sleep(PAUSE_TIME)
     scroll_to_bottom(page)
     
     # - keyword
@@ -348,41 +346,29 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         if len(pages) > 1:
             for k in range(1, len(pages)):
                 pages[k].close()
-        
+
         # print(str(i)+' | '+post_link)
         scrape_output =  scrape_post(context, post_link)
-        
-        if scrape_output == "ups_1":
-            url_1 = page.url
-            close_context(context)
-            page = context.new_page()
-            page.goto(url_1)
-            scroll_to_bottom(page)
-            scroll_to_bottom(page)
-            scroll_to_bottom(page)
-        
-        # for when need to slow down
-        time.sleep(PAUSE_TIME)
+
         
         j = 0
         while scrape_output == "try_again" and j<15: # it's bugged idk
             print('j: '+str(j))
-            time.sleep(5)
+            time.sleep(j)
+            url_1 = page.url
+            close_context(context)
+            time.sleep(j)
+            page = context.new_page()
+            time.sleep(j)
+            page.goto(url_1)
+            time.sleep(j)
             scroll_to_bottom(page)
-            scrape_output =  scrape_post(context, post_link)
+            scroll_to_bottom(page)
+            scroll_to_bottom(page)
+            time.sleep(j)
+            scrape_output = scrape_post(context, post_link)
             if scrape_output != "try_again":
                 print('fixed ups '+post_link)
-            elif j > 0:
-                url_1 = page.url
-                close_context(context)
-                time.sleep(j)
-                page = context.new_page()
-                time.sleep(j)
-                page.goto(url_1)
-                time.sleep(j)
-                scroll_to_bottom(page)
-                scroll_to_bottom(page)
-                scroll_to_bottom(page)
             j+=1
             
         
