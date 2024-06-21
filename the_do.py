@@ -66,8 +66,6 @@ def create_table():
             for col in ["headlines", "texts", "votes", "comments", "comment_counts", "comment_votes"]:
                 sql_statements.append(f"""ALTER TABLE the_do ADD {str(kw)+str(interval)+str(col)} TEXT;""")
     
-    # print('sql_statements: ')
-    # print(sql_statements)
     execute_sql(sql_statements)
     
     sql_statements = []
@@ -79,8 +77,6 @@ def create_table():
         for interval in ["volume_24h", "percent_change_1h", "percent_change_24h", "percent_change_7d", "percent_change_30d"]:
             sql_statements.append(f"""ALTER TABLE the_do ADD {str(name_)+"_"+str(interval)} FLOAT;""")
             
-    # print('sql_statements: ')
-    # print(sql_statements)
     execute_sql(sql_statements)
 
 def evaluate_in_page(page, xpath):
@@ -255,7 +251,6 @@ def read_comments(page):
     return [comments, comments_votes]
 
 def scrape_post(context, url):
-    # print(url)
     
     try:
         page = context.new_page()
@@ -263,14 +258,11 @@ def scrape_post(context, url):
         page.goto(url)
         juan_scroll(page)
     except:
-        print('ups 1 '+url)
         return "try_again"
             
     # see if loaded correctly
     error_div = evaluate_in_page(page, "//shreddit-forbidden")
     if error_div:
-        if error_div:
-            print('ups 2 | error_div appeared | '+url)
         return 'try_again'
     
     juan_scroll(page)
@@ -354,21 +346,21 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         j = 0
         while scrape_output == "try_again" and j<15: # it's bugged idk
             print('j: '+str(j))
-            time.sleep(j)
+            time.sleep(j+1)
             url_1 = page.url
             close_context(context)
-            time.sleep(j)
+            time.sleep(j+1)
             page = context.new_page()
-            time.sleep(j)
+            time.sleep(j+1)
             page.goto(url_1)
-            time.sleep(j)
+            time.sleep(j+1)
             scroll_to_bottom(page)
             scroll_to_bottom(page)
             scroll_to_bottom(page)
-            time.sleep(j)
+            time.sleep(j+1)
             scrape_output = scrape_post(context, post_link)
-            if scrape_output != "try_again":
-                print('fixed ups '+post_link)
+            # if scrape_output != "try_again":
+            #     print('fixed')
             j+=1
             
         
