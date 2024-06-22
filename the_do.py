@@ -461,55 +461,69 @@ def close_context(context):
 def get_search_data(context, page, kw):
     # return list with data to keyword search
 
-    page.close()
-    page = context.new_page()
-    page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
-    scroll_to_bottom(page)
-    new = one_search_page(context, page)
+    try:
+        page.close()
+        page = context.new_page()
+        page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
+        scroll_to_bottom(page)
+        new = one_search_page(context, page)
+    except Exception as e:
+        new = 'try_again'
+        print(e)
     if new == 'try_again':
-        time.sleep(1)
+        time.sleep(10)
         close_context(context)
         page = context.new_page()
         page.wait_for_load_state('domcontentloaded')
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
         scroll_to_bottom(page)
-        time.sleep(1)
+        time.sleep(10)
         new = one_search_page(context, page, PAUSE_TIME = .37)
         if new == 'try_again':
             print("UPS ERROR")
             exit()
-    close_context(context)
-    page = context.new_page()
-    page.wait_for_load_state('domcontentloaded')
-    page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
-    scroll_to_bottom(page)
-    hot = one_search_page(context, page)
-    if hot == 'try_again':
-        time.sleep(1)
+            
+    try:
         close_context(context)
         page = context.new_page()
         page.wait_for_load_state('domcontentloaded')
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
         scroll_to_bottom(page)
-        time.sleep(1)
+        hot = one_search_page(context, page)
+    except Exception as e:
+        hot = 'try_again'
+        print(e)
+    if hot == 'try_again':
+        time.sleep(10)
+        close_context(context)
+        page = context.new_page()
+        page.wait_for_load_state('domcontentloaded')
+        page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
+        scroll_to_bottom(page)
+        time.sleep(10)
         hot = one_search_page(context, page, PAUSE_TIME = .37)
         if hot == 'try_again':
             print("UPS ERROR")
             exit()
-    close_context(context)
-    page = context.new_page()
-    page.wait_for_load_state('domcontentloaded')
-    page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
-    scroll_to_bottom(page)
-    relevant = one_search_page(context, page)
-    if relevant == 'try_again':
-        time.sleep(1)
+            
+    try:
         close_context(context)
         page = context.new_page()
         page.wait_for_load_state('domcontentloaded')
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
         scroll_to_bottom(page)
-        time.sleep(1)
+        relevant = one_search_page(context, page)
+    except Exception as e:
+        relevant = 'try_again'
+        print(e)
+    if relevant == 'try_again':
+        time.sleep(10)
+        close_context(context)
+        page = context.new_page()
+        page.wait_for_load_state('domcontentloaded')
+        page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
+        scroll_to_bottom(page)
+        time.sleep(10)
         relevant = one_search_page(context, page, PAUSE_TIME = .37)
         if relevant == 'try_again':
             print("UPS ERROR")
