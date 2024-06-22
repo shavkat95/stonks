@@ -26,7 +26,9 @@ keywords = ["bitcoin", "btc", 'ethereum', "eth", 'bnb', 'solana', 'xrp', 'dogeco
             "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "satoshis", "meme_coin", "meme_coins", "token_dominance", "on_chain",
             ]
 
-slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot_new', 'bitcoin_cash', 'chainlink', 'near_protocol']
+slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba-inu', 'avalanche', 'tron', 'polkadot-new', 'bitcoin-cash', 'chainlink', 'near-protocol', 
+         'polygon', 'litecoin','unus-sed-leo', 'pepe', 'kaspa', 'ethereum-classic', 'aptos', 'monero', 'render', 'hedera', 'stellar', 'cosmos', 'mantle', 'arbitrum', 'okb', 'filecoin', 
+         'cronos', 'stacks', 'immutable-x', 'maker', 'sui', 'vechain', 'the-graph']
 
 def execute_sql(sql_statements):
     # execute statements
@@ -88,6 +90,7 @@ def create_table():
     # - - "volume_24h", "percent_change_1h", "percent_change_24h", "percent_change_7d", "percent_change_30d"
     
     for name_ in slugs:
+        name_ = name_.replace('-', "_")
         for interval in ["volume_24h", "percent_change_1h", "percent_change_24h", "percent_change_7d", "percent_change_30d"]:
             sql_statements.append(f"""ALTER TABLE cmc_data ADD {str(name_)+"_"+str(interval)} FLOAT;""")
             execute_sql(sql_statements)
