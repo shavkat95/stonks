@@ -15,7 +15,7 @@ else:
 
 # headless = False #debugging on mac
 
-SCROLL_PAUSE_TIME = .01
+SCROLL_PAUSE_TIME = .001
 
 keywords = ["bitcoin", "btc", 'ethereum', "eth", 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             'polygon_matic', 'litecoin', 'unus_sed_leo', 'pepe_coin', 'kaspa_coin', 'ethereum_classic', 'etc_coin', 'aptos_apt', 'monero', 'xmr', 'render_rndr', 'hedera_HBAR', 'stellar_XLM', 'cosmos_ATOM_crypto', 'mantle_MNT', 'arbitrum_ARB', 'okb_coin', 
@@ -29,6 +29,10 @@ keywords = ["bitcoin", "btc", 'ethereum', "eth", 'bnb', 'solana', 'xrp', 'dogeco
 slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba-inu', 'avalanche', 'tron', 'polkadot-new', 'bitcoin-cash', 'chainlink', 'near-protocol', 
          'polygon', 'litecoin','unus-sed-leo', 'pepe', 'kaspa', 'ethereum-classic', 'aptos', 'monero', 'render', 'hedera', 'stellar', 'cosmos', 'mantle', 'arbitrum', 'okb', 'filecoin', 
          'cronos', 'stacks', 'immutable-x', 'maker', 'sui', 'vechain', 'the-graph']
+
+
+
+
 
 def execute_sql(sql_statements):
     # execute statements
@@ -488,64 +492,63 @@ def get_search_data(context, page, kw):
     except Exception as e:
         new = 'try_again'
         print(e)
-    if new == 'try_again':
-        time.sleep(10)
-        close_context(context)
-        page = context.new_page()
-        page.wait_for_load_state('domcontentloaded')
-        page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
-        scroll_to_bottom(page)
-        time.sleep(10)
-        new = one_search_page(context, page, PAUSE_TIME = .37)
-        if new == 'try_again':
-            print("UPS ERROR")
-            exit()
+    while new == 'try_again':
+        try:
+            time.sleep(10)
+            close_context(context)
+            page = context.new_page()
+            page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
+            scroll_to_bottom(page)
+            time.sleep(10)
+            new = one_search_page(context, page, PAUSE_TIME = .37)
+        except Exception as e:
+            print(e)
+            new = 'try_again'
+        
             
     try:
         close_context(context)
         page = context.new_page()
-        page.wait_for_load_state('domcontentloaded')
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
         scroll_to_bottom(page)
         hot = one_search_page(context, page)
     except Exception as e:
         hot = 'try_again'
         print(e)
-    if hot == 'try_again':
-        time.sleep(10)
-        close_context(context)
-        page = context.new_page()
-        page.wait_for_load_state('domcontentloaded')
-        page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
-        scroll_to_bottom(page)
-        time.sleep(10)
-        hot = one_search_page(context, page, PAUSE_TIME = .37)
-        if hot == 'try_again':
-            print("UPS ERROR")
-            exit()
+    while hot == 'try_again':
+        try:
+            time.sleep(10)
+            close_context(context)
+            page = context.new_page()
+            page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
+            scroll_to_bottom(page)
+            time.sleep(10)
+            hot = one_search_page(context, page, PAUSE_TIME = .37)
+        except Exception as e:
+            print(e)
+            hot = 'try_again'
             
     try:
         close_context(context)
         page = context.new_page()
-        page.wait_for_load_state('domcontentloaded')
         page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
         scroll_to_bottom(page)
         relevant = one_search_page(context, page)
     except Exception as e:
         relevant = 'try_again'
         print(e)
-    if relevant == 'try_again':
-        time.sleep(10)
-        close_context(context)
-        page = context.new_page()
-        page.wait_for_load_state('domcontentloaded')
-        page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
-        scroll_to_bottom(page)
-        time.sleep(10)
-        relevant = one_search_page(context, page, PAUSE_TIME = .37)
-        if relevant == 'try_again':
-            print("UPS ERROR")
-            exit()
+    while relevant == 'try_again':
+        try:
+            time.sleep(10)
+            close_context(context)
+            page = context.new_page()
+            page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
+            scroll_to_bottom(page)
+            time.sleep(10)
+            relevant = one_search_page(context, page, PAUSE_TIME = .37)
+        except Exception as e:
+            print(e)
+            relevant = 'try_again'
         
     [hr2, hr12, hr24, d7, mo] =  new
     

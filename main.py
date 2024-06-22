@@ -112,8 +112,8 @@ def get_row(nh):
     
     for table_name in ["reddit_2hr", "reddit_12hr", "reddit_3d", "reddit_7d", "reddit_mo", "cmc_data"]:
         sql_statements = [ 
-            f"""INSERT INTO {table_name} (id);
-            VALUES ({id});"""]
+            f"""INSERT INTO {table_name} (id)
+            VALUES ("{id}");"""]
         run_sql_statements(sql_statements)
         sql_statements = []
     
@@ -121,7 +121,7 @@ def get_row(nh):
     # new row
     sql_statements = [ 
         f"""INSERT INTO the_do (id)
-            VALUES ({id});""",
+            VALUES ("{id}");""",
         ]
     run_sql_statements(sql_statements)
     
