@@ -3,9 +3,6 @@
 # pkill -9 -f main.py
 
 
-
-
-
 from datetime import time
 import datetime
 from time import sleep
@@ -13,8 +10,6 @@ import sqlite3
 import the_do
 import cmc
 
-def act(x):
-    return x+10
 
 def get_next_full_hour():
     fullhour = str(datetime.datetime.today().time())[:2]
@@ -73,7 +68,7 @@ def run_sql_statements(statements):
             cursor = conn.cursor()
             for statement in statements:
                 cursor.execute(statement)
-            conn.commit()
+                conn.commit()
     except sqlite3.Error as e:
         print(e)
         
@@ -92,7 +87,7 @@ def get_row(nh):
         print('waiting till 00:00 to write less code')
         wait_until('00:00')
     date = datetime.datetime.today()
-    id = str(date)+' - '+str(nh)
+    id = str(date)[:10]+' - '+str(nh)
     
     print('doing it (reddit scraping)')
     
@@ -114,15 +109,11 @@ def get_row(nh):
         sql_statements = [ 
             f"""INSERT INTO {table_name} (id)
             VALUES ("{id}");"""]
+        # print(sql_statements)
         run_sql_statements(sql_statements)
         sql_statements = []
     
     
-    # new row
-    sql_statements = [ 
-        f"""INSERT INTO the_do (id)
-            VALUES ("{id}");""",
-        ]
     run_sql_statements(sql_statements)
     
     sql_statements = []
@@ -131,9 +122,10 @@ def get_row(nh):
         i = 0
         for interval in ["reddit_2hr", "reddit_12hr", "reddit_3d", "reddit_7d", "reddit_mo"]:
             for col in ["headlines", "texts", "votes", "comments", "comment_counts", "comment_votes"]:
-                sql_statements.append(f"""REPLACE INTO {interval} (id, {str(kw)+"_"+str(col)}) VALUES("{id}", "{list_1[i][col]}");""")
+                sql_statements.append(f"""UPDATE {interval} SET {str(kw)+"_"+str(col)}="{list_1[i][col].replace('"', '')}" WHERE id="{id}";""")
             i+=1
     print('writing to db reddit data')
+    # print(sql_statements)
     run_sql_statements(sql_statements)
     
     print('writing to db cmc data')
@@ -142,7 +134,9 @@ def get_row(nh):
         if not metrics[met_]:
             print("ERROR 28")
             exit()
-        sql_statements.append(f"""REPLACE INTO cmc_data (id, {met_}) VALUES("{id}", {metrics[met_]});""")
+        sql_statements.append(f"""UPDATE cmc_data SET {met_}={metrics[met_]} WHERE id="{id}";""")
+    # print(sql_statements)
+    run_sql_statements(sql_statements)
     print('done')
     return id
 

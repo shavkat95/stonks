@@ -15,7 +15,8 @@ else:
 
 # headless = False #debugging on mac
 
-SCROLL_PAUSE_TIME = .001
+SCROLL_PAUSE_TIME = 0.00
+PAUSE_TIME = 0.01 # we don't want j's
 
 keywords = ["bitcoin", "btc", 'ethereum', "eth", 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             'polygon_matic', 'litecoin', 'unus_sed_leo', 'pepe_coin', 'kaspa_coin', 'ethereum_classic', 'etc_coin', 'aptos_apt', 'monero', 'xmr', 'render_rndr', 'hedera_HBAR', 'stellar_XLM', 'cosmos_ATOM_crypto', 'mantle_MNT', 'arbitrum_ARB', 'okb_coin', 
@@ -35,8 +36,6 @@ slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', '
 # slugs = ["bitcoin"]
 
 
-
-
 def execute_sql(sql_statements):
     # execute statements
     try:
@@ -48,6 +47,7 @@ def execute_sql(sql_statements):
     except sqlite3.Error as e:
         print(e)
     
+    
 def create_table():
     # also deletes 'the_do'-table
     # set up table with the columns for each keyword + per crypto volume_24h/market_cap, percent_change_1h, percent_change_24h, percent_change_7d, percent_change_30d (https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest)
@@ -56,9 +56,7 @@ def create_table():
         sql_statements = [ 
             f"""DROP TABLE IF EXISTS {interval};""",
             f"""CREATE TABLE {interval} (
-                    id TEXT
-            );""",
-            f"""CREATE UNIQUE INDEX idx_{interval} ON {interval} (id)"""]
+                    id TEXT PRIMARY KEY);"""]
         execute_sql(sql_statements)
         sql_statements = []
         
@@ -103,6 +101,7 @@ def create_table():
             execute_sql(sql_statements)
             sql_statements = []
             
+            
 def evaluate_in_page(page, xpath):
     # with sync_playwright() as p:
     # browser = p.chromium.launch(headless = not debug)    
@@ -123,6 +122,7 @@ def evaluate_in_page(page, xpath):
             """
     result = page.evaluate(extract_tweet_javascript.replace("$PATH", str(xpath)))
     return result
+
 
 def get_comment_votes(page, i, j = False, k = False, l = False, m = False):
     # document.querySelector("#comment-tree > shreddit-comment:nth-child(2) > shreddit-comment > shreddit-comment-action-row").shadowRoot.querySelector("div > div > span > span > faceplate-number")
@@ -176,6 +176,7 @@ def get_comment_votes(page, i, j = False, k = False, l = False, m = False):
     result = page.evaluate(extract_tweet_javascript.replace("$jsPath", jsPath)) 
     return result
 
+
 def juan_scroll(page):
     page.keyboard.press("PageDown")
     page.keyboard.press("PageDown")
@@ -196,10 +197,12 @@ def juan_scroll(page):
     page.keyboard.press("PageDown")
     page.wait_for_load_state('domcontentloaded')
 
+
 def scroll_to_bottom(page):
     for _ in range(5):
         juan_scroll(page)
     time.sleep(SCROLL_PAUSE_TIME)
+
 
 def read_comments(page):
     comments = ""
@@ -274,7 +277,8 @@ def read_comments(page):
     
     return [comments, comments_votes]
 
-def scrape_post(context, url, PAUSE_TIME = 0):
+
+def scrape_post(context, url, PAUSE_TIME = PAUSE_TIME):
     time.sleep(PAUSE_TIME)
     
     try:
@@ -304,7 +308,8 @@ def scrape_post(context, url, PAUSE_TIME = 0):
     page.close()
     return [post_text, post_comments, comments_votes]
 
-def one_search_page(context, page, PAUSE_TIME = 0):
+
+def one_search_page(context, page, PAUSE_TIME = PAUSE_TIME):
     time.sleep(PAUSE_TIME)
     scroll_to_bottom(page)
     
@@ -370,7 +375,7 @@ def one_search_page(context, page, PAUSE_TIME = 0):
         
         j = 0
         while scrape_output == "try_again" and j<15: # it's bugged idk
-            # print('j: '+str(j))
+            print('j: '+str(j))
             time.sleep(j+1)
             url_1 = page.url
             close_context(context)
@@ -474,13 +479,15 @@ def one_search_page(context, page, PAUSE_TIME = 0):
             juan_scroll(page)
     return [hr2, hr12, hr24, d7, mo]
 
+
 def close_context(context):
     pages = context.pages
     if len(pages) > 0:
         for k in range(0, len(pages)):
             pages[k].close()
    
-def get_search_data(context, page, kw):
+   
+def get_search_data(context, page, kw, p, browser):
     # return list with data to keyword search
 
     try:
@@ -495,12 +502,12 @@ def get_search_data(context, page, kw):
     while new == 'try_again':
         try:
             close_context(context)
-            time.sleep(10)
+            browser = p.chromium.launch(headless = headless)
+            context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81")
             page = context.new_page()
             page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
             scroll_to_bottom(page)
-            time.sleep(10)
-            new = one_search_page(context, page, PAUSE_TIME = .37)
+            new = one_search_page(context, page, PAUSE_TIME = PAUSE_TIME*50)
         except Exception as e:
             print(e)
             new = 'try_again'
@@ -518,12 +525,12 @@ def get_search_data(context, page, kw):
     while hot == 'try_again':
         try:
             close_context(context)
-            time.sleep(10)
+            browser = p.chromium.launch(headless = headless)
+            context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81")
             page = context.new_page()
             page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
             scroll_to_bottom(page)
-            time.sleep(10)
-            hot = one_search_page(context, page, PAUSE_TIME = .37)
+            hot = one_search_page(context, page, PAUSE_TIME = PAUSE_TIME*50)
         except Exception as e:
             print(e)
             hot = 'try_again'
@@ -540,12 +547,12 @@ def get_search_data(context, page, kw):
     while relevant == 'try_again':
         try:
             close_context(context)
-            time.sleep(10)
+            browser = p.chromium.launch(headless = headless)
+            context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81")
             page = context.new_page()
             page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
             scroll_to_bottom(page)
-            time.sleep(10)
-            relevant = one_search_page(context, page, PAUSE_TIME = .37)
+            relevant = one_search_page(context, page, PAUSE_TIME = PAUSE_TIME*50)
         except Exception as e:
             print(e)
             relevant = 'try_again'
@@ -585,19 +592,22 @@ def get_search_data(context, page, kw):
     mo["comment_votes"]+=hot[4]["comment_votes"] + relevant[4]["comment_votes"]  
     
     return [hr2, hr12, hr24, d7, mo]
-        
+
+
 def do_the_do(kw):
     # for all keywords, get the lists + price-change data per token -> write to table
     with sync_playwright() as p:
         browser = p.chromium.launch(headless = headless)
         context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81")
         page = context.new_page()
-        [hr2, hr12, hr24, d7, mo] = get_search_data(context, page, kw)
+        [hr2, hr12, hr24, d7, mo] = get_search_data(context, page, kw, p, browser)
     
     return [hr2, hr12, hr24, d7, mo]
+
 
 
 
 if __name__ == '__main__':
     create_table()
     # do_the_do("dogecoin")
+
