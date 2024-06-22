@@ -21,7 +21,7 @@ keywords = ["bitcoin", "btc", 'ethereum', "eth", 'bnb', 'solana', 'xrp', 'dogeco
             'polygon_matic', 'litecoin', 'unus_sed_leo', 'pepe_coin', 'kaspa_coin', 'ethereum_classic', 'etc_coin', 'aptos_apt', 'monero', 'xmr', 'render_rndr', 'hedera_HBAR', 'stellar_XLM', 'cosmos_ATOM_crypto', 'mantle_MNT', 'arbitrum_ARB', 'okb_coin', 
             'filecoin', 'cronos_crypto', 'cronos_coin', 'cronos_token', 'stacks_STX', 'immutable_IMX', 'maker_MKR', 'sui_token', 'sui_coin', 'sui_crypto', 'sui_network', 'vechain', 'the_graph_GRT', 'thegraph',
             
-            "coin_exchange","crypto_exchange","binance", "coinbase", "OKX", "coinbase_exchange", "bybit", "Upbit", "Kraken", "Gate_io_Exchange", "HTX_exchange", "Bitfinex", "KuCoin", "MEXC_Exchange", "Bitget", "Crypto_com_Exchange", "Binance_TR", "BingX", 
+            "coin_exchange","crypto_exchange","binance", "coinbase", "OKX", "OKEx", "coinbase_exchange", "bybit", "Upbit", "Kraken", "Gate_io_Exchange", "HTX_exchange", "Bitfinex", "KuCoin", "MEXC_Exchange", "Bitget", "Crypto_com_Exchange", "Binance_TR", "BingX", 
             
             "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "satoshis", "meme_coin", "meme_coins", "token_dominance", "on_chain",
             ]
@@ -42,18 +42,17 @@ def execute_sql(sql_statements):
 def create_table():
     # also deletes 'the_do'-table
     # set up table with the columns for each keyword + per crypto volume_24h/market_cap, percent_change_1h, percent_change_24h, percent_change_7d, percent_change_30d (https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest)
-    sql_statements = [ 
-        """DROP TABLE IF EXISTS the_do;""",
-        """CREATE TABLE the_do (
-                id TEXT
-        );"""]
     
-    execute_sql(sql_statements)
-    
-    sql_statements = [ 
-        """CREATE UNIQUE INDEX idx ON the_do (id)""",] # not sure about best practices here
-    
-    execute_sql(sql_statements)
+    for interval in ["reddit_2hr", "reddit_12hr", "reddit_3d", "reddit_7d", "reddit_mo"]:
+        sql_statements = [ 
+            f"""DROP TABLE IF EXISTS {interval};""",
+            f"""CREATE TABLE {interval} (
+                    id TEXT
+            );""",
+            f"""CREATE UNIQUE INDEX idx_{interval} ON {interval} (id)"""]
+        execute_sql(sql_statements)
+        sql_statements = []
+        
     
     sql_statements = []
     
@@ -62,9 +61,24 @@ def create_table():
     # - - - headlines, texts, votes, comments, comment counts, comment votes
     
     for kw in keywords:
-        for interval in ["_2hr_", "_12hr_", "_3d_", "_7d_", "_mo_"]:
+        for interval in ["reddit_2hr", "reddit_12hr", "reddit_3d", "reddit_7d", "reddit_mo"]:
             for col in ["headlines", "texts", "votes", "comments", "comment_counts", "comment_votes"]:
-                sql_statements.append(f"""ALTER TABLE the_do ADD {str(kw)+str(interval)+str(col)} TEXT;""")
+                sql_statements.append(f"""ALTER TABLE {interval} ADD {str(kw)+"_"+str(col)} TEXT;""")
+                execute_sql(sql_statements)
+                sql_statements = []
+    
+    sql_statements = []
+    
+    sql_statements = [ 
+        """DROP TABLE IF EXISTS cmc_data;""",
+        """CREATE TABLE cmc_data (
+                id TEXT
+        );"""]
+
+    execute_sql(sql_statements)
+    
+    sql_statements = [ 
+        """CREATE UNIQUE INDEX idx_cmc ON cmc_data (id)""",] # not sure about best practices here
     
     execute_sql(sql_statements)
     
@@ -75,9 +89,10 @@ def create_table():
     
     for name_ in slugs:
         for interval in ["volume_24h", "percent_change_1h", "percent_change_24h", "percent_change_7d", "percent_change_30d"]:
-            sql_statements.append(f"""ALTER TABLE the_do ADD {str(name_)+"_"+str(interval)} FLOAT;""")
+            sql_statements.append(f"""ALTER TABLE cmc_data ADD {str(name_)+"_"+str(interval)} FLOAT;""")
+            execute_sql(sql_statements)
+            sql_statements = []
             
-    execute_sql(sql_statements)
 
 def evaluate_in_page(page, xpath):
     # with sync_playwright() as p:

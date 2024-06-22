@@ -109,6 +109,15 @@ def get_row(nh):
     # write to db
     print('writing to db '+id)
     
+    
+    for table_name in ["reddit_2hr", "reddit_12hr", "reddit_3d", "reddit_7d", "reddit_mo", "cmc_data"]:
+        sql_statements = [ 
+            f"""INSERT INTO {table_name} (id);
+            VALUES ({id});"""]
+        run_sql_statements(sql_statements)
+        sql_statements = []
+    
+    
     # new row
     sql_statements = [ 
         f"""INSERT INTO the_do (id)
@@ -120,9 +129,9 @@ def get_row(nh):
     for kw, list_1 in reddit.items():
         # [hr2, hr12, hr24, d7, mo] = list_1
         i = 0
-        for interval in ["_2hr_", "_12hr_", "_3d_", "_7d_", "_mo_"]:
+        for interval in ["reddit_2hr", "reddit_12hr", "reddit_3d", "reddit_7d", "reddit_mo"]:
             for col in ["headlines", "texts", "votes", "comments", "comment_counts", "comment_votes"]:
-                sql_statements.append(f"""REPLACE INTO the_do (id, {str(kw)+str(interval)+str(col)}) VALUES({id}, {list_1[i][col]});""")
+                sql_statements.append(f"""REPLACE INTO {interval} (id, {str(kw)+"_"+str(col)}) VALUES({id}, {list_1[i][col]});""")
             i+=1
     print('writing to db reddit data')
     run_sql_statements(sql_statements)
@@ -133,7 +142,7 @@ def get_row(nh):
         if not metrics[met_]:
             print("ERROR 28")
             exit()
-        sql_statements.append(f"""REPLACE INTO the_do (id, {met_}) VALUES({id}, {metrics[met_]});""")
+        sql_statements.append(f"""REPLACE INTO cmc_data (id, {met_}) VALUES({id}, {metrics[met_]});""")
     print('done')
     return id
 
