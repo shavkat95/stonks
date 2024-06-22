@@ -17,13 +17,13 @@ else:
 
 SCROLL_PAUSE_TIME = .01
 
-keywords = ["bitcoin", 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
-            "btc", 
-            "eth",
+keywords = ["bitcoin", "btc", 'ethereum', "eth", 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
+            'polygon_matic', 'litecoin', 'unus_sed_leo', 'pepe_coin', 'kaspa_coin', 'ethereum_classic', 'etc_coin', 'aptos_apt', 'monero', 'xmr', 'render_rndr', 'hedera_HBAR', 'stellar_XLM', 'cosmos_ATOM_crypto', 'mantle_MNT', 'arbitrum_ARB', 'okb_coin', 
+            'filecoin', 'cronos_crypto', 'cronos_coin', 'cronos_token', 'stacks_STX', 'immutable_IMX', 'maker_MKR', 'sui_token', 'sui_coin', 'sui_crypto', 'sui_network', 'vechain', 'the_graph_GRT', 'thegraph',
             
-            "coin_exchange","crypto_exchange","binance", "coinbase", "OKX", "coinbase_exchange", "bybit", "Upbit", "Kraken", "Gate_io_Exchange", "HTX", "Bitfinex", "KuCoin", "MEXC_Exchange", "Bitget", "Crypto_com_Exchange", "Binance_TR", "BingX", 
+            "coin_exchange","crypto_exchange","binance", "coinbase", "OKX", "coinbase_exchange", "bybit", "Upbit", "Kraken", "Gate_io_Exchange", "HTX_exchange", "Bitfinex", "KuCoin", "MEXC_Exchange", "Bitget", "Crypto_com_Exchange", "Binance_TR", "BingX", 
             
-            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "satoshis", "meme_coin", "meme_coins", "token_dominance", "on_chain"
+            "dapps", "defi", "crypto", "cryptocurrency", "blockchain", "web3", "ledger", "satoshi", "satoshis", "meme_coin", "meme_coins", "token_dominance", "on_chain",
             ]
 
 slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot_new', 'bitcoin_cash', 'chainlink', 'near_protocol']
