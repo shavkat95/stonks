@@ -30,6 +30,9 @@ slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', '
          'polygon', 'litecoin','unus-sed-leo', 'pepe', 'kaspa', 'ethereum-classic', 'aptos', 'monero', 'render', 'hedera', 'stellar', 'cosmos', 'mantle', 'arbitrum', 'okb', 'filecoin', 
          'cronos', 'stacks', 'immutable-x', 'maker', 'sui', 'vechain', 'the-graph']
 
+# #testing
+# keywords = ['bitcoin']
+# slugs = ["bitcoin"]
 
 
 
@@ -100,7 +103,6 @@ def create_table():
             execute_sql(sql_statements)
             sql_statements = []
             
-
 def evaluate_in_page(page, xpath):
     # with sync_playwright() as p:
     # browser = p.chromium.launch(headless = not debug)    
@@ -272,7 +274,8 @@ def read_comments(page):
     
     return [comments, comments_votes]
 
-def scrape_post(context, url):
+def scrape_post(context, url, PAUSE_TIME = 0):
+    time.sleep(PAUSE_TIME)
     
     try:
         page = context.new_page()
@@ -362,7 +365,7 @@ def one_search_page(context, page, PAUSE_TIME = 0):
                 pages[k].close()
 
         # print(str(i)+' | '+post_link)
-        scrape_output =  scrape_post(context, post_link)
+        scrape_output =  scrape_post(context, post_link, PAUSE_TIME)
 
         
         j = 0
@@ -383,7 +386,7 @@ def one_search_page(context, page, PAUSE_TIME = 0):
             scroll_to_bottom(page)
             scroll_to_bottom(page)
             time.sleep(j+1)
-            scrape_output = scrape_post(context, post_link)
+            scrape_output = scrape_post(context, post_link, PAUSE_TIME)
             # if scrape_output != "try_again":
             #     print('fixed')
             j+=1
@@ -471,14 +474,11 @@ def one_search_page(context, page, PAUSE_TIME = 0):
             juan_scroll(page)
     return [hr2, hr12, hr24, d7, mo]
 
-
 def close_context(context):
     pages = context.pages
     if len(pages) > 0:
         for k in range(0, len(pages)):
             pages[k].close()
-    
-    
    
 def get_search_data(context, page, kw):
     # return list with data to keyword search
@@ -494,8 +494,8 @@ def get_search_data(context, page, kw):
         print(e)
     while new == 'try_again':
         try:
-            time.sleep(10)
             close_context(context)
+            time.sleep(10)
             page = context.new_page()
             page.goto(f'https://www.reddit.com/search/?q={kw}&sort=new')
             scroll_to_bottom(page)
@@ -517,8 +517,8 @@ def get_search_data(context, page, kw):
         print(e)
     while hot == 'try_again':
         try:
-            time.sleep(10)
             close_context(context)
+            time.sleep(10)
             page = context.new_page()
             page.goto(f'https://www.reddit.com/search/?q={kw}&sort=hot')
             scroll_to_bottom(page)
@@ -539,8 +539,8 @@ def get_search_data(context, page, kw):
         print(e)
     while relevant == 'try_again':
         try:
-            time.sleep(10)
             close_context(context)
+            time.sleep(10)
             page = context.new_page()
             page.goto(f'https://www.reddit.com/search/?q={kw}&sort=relevance')
             scroll_to_bottom(page)
@@ -595,9 +595,6 @@ def do_the_do(kw):
         [hr2, hr12, hr24, d7, mo] = get_search_data(context, page, kw)
     
     return [hr2, hr12, hr24, d7, mo]
-
-
-
 
 
 

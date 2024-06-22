@@ -217,6 +217,16 @@ metrics = [
     "the_graph_percent_change_30d",
 ]
 
+# #testing
+# slugs = ['bitcoin']
+
+# metrics = [
+#     "bitcoin_volume_24h",
+#     "bitcoin_percent_change_1h",
+#     "bitcoin_percent_change_24h",
+#     "bitcoin_percent_change_7d",
+#     "bitcoin_percent_change_30d",]
+
 
 
 

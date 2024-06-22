@@ -131,7 +131,7 @@ def get_row(nh):
         i = 0
         for interval in ["reddit_2hr", "reddit_12hr", "reddit_3d", "reddit_7d", "reddit_mo"]:
             for col in ["headlines", "texts", "votes", "comments", "comment_counts", "comment_votes"]:
-                sql_statements.append(f"""REPLACE INTO {interval} (id, {str(kw)+"_"+str(col)}) VALUES({id}, {list_1[i][col]});""")
+                sql_statements.append(f"""REPLACE INTO {interval} (id, {str(kw)+"_"+str(col)}) VALUES("{id}", "{list_1[i][col]}");""")
             i+=1
     print('writing to db reddit data')
     run_sql_statements(sql_statements)
@@ -142,7 +142,7 @@ def get_row(nh):
         if not metrics[met_]:
             print("ERROR 28")
             exit()
-        sql_statements.append(f"""REPLACE INTO cmc_data (id, {met_}) VALUES({id}, {metrics[met_]});""")
+        sql_statements.append(f"""REPLACE INTO cmc_data (id, {met_}) VALUES("{id}", {metrics[met_]});""")
     print('done')
     return id
 
