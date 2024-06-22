@@ -1,5 +1,3 @@
- #This example uses Python 2.7 and the python-request library.
-
 from requests import Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
@@ -226,8 +224,6 @@ metrics = [
 #     "bitcoin_percent_change_24h",
 #     "bitcoin_percent_change_7d",
 #     "bitcoin_percent_change_30d",]
-
-
 
 
 def get_metrics():
