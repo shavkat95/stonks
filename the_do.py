@@ -12,7 +12,6 @@ if os.name=="posix":
     headless = True
 else:
     headless = False
-
 # headless = False #debugging on mac
 
 SCROLL_PAUSE_TIME = 0.00
@@ -31,9 +30,12 @@ slugs = ['bitcoin', 'ethereum', 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', '
          'polygon', 'litecoin','unus-sed-leo', 'pepe', 'kaspa', 'ethereum-classic', 'aptos', 'monero', 'render', 'hedera', 'stellar', 'cosmos', 'mantle', 'arbitrum', 'okb', 'filecoin', 
          'cronos', 'stacks', 'immutable-x', 'maker', 'sui', 'vechain', 'the-graph']
 
-# #testing
-# keywords = ['bitcoin']
-# slugs = ["bitcoin"]
+testing = False
+
+if testing:
+    keywords = ['bitcoin']
+    slugs = ["bitcoin"]
+    PAUSE_TIME = 3
 
 
 def execute_sql(sql_statements):
@@ -63,10 +65,6 @@ def create_table():
     
     sql_statements = []
     
-    # - keyword
-    # - - 2 hr, 12 hr, 24 hr, 7d
-    # - - - headlines, texts, votes, comments, comment counts, comment votes
-    
     for kw in keywords:
         for interval in ["reddit_2hr", "reddit_12hr", "reddit_3d", "reddit_7d", "reddit_mo"]:
             for col in ["headlines", "texts", "votes", "comments", "comment_counts", "comment_votes"]:
@@ -84,15 +82,7 @@ def create_table():
 
     execute_sql(sql_statements)
     
-    sql_statements = [ 
-        """CREATE UNIQUE INDEX idx_cmc ON cmc_data (id)""",] # not sure about best practices here
-    
-    execute_sql(sql_statements)
-    
     sql_statements = []
-    
-    # - token
-    # - - "volume_24h", "percent_change_1h", "percent_change_24h", "percent_change_7d", "percent_change_30d"
     
     for name_ in slugs:
         name_ = name_.replace('-', "_")
