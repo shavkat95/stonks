@@ -250,15 +250,6 @@ def get_metrics():
       
   return output
 
-# print(get_metrics())
-
-
-
-
-
-
-
-
 
 def get_ids(data):
   ids=[]
@@ -273,4 +264,3 @@ def get_ids(data):
   print(slugs)
   return slugs
   
-# ids = get_ids()

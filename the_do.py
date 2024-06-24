@@ -35,7 +35,7 @@ testing = False
 if testing:
     keywords = ['bitcoin']
     slugs = ["bitcoin"]
-    PAUSE_TIME = 3
+    PAUSE_TIME = 3 # for when there's prod running on same network, there'll be loading problems
 
 
 def execute_sql(sql_statements):
