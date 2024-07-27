@@ -20,6 +20,8 @@ def get_next_full_hour():
     
 
 def wait_until(runTime, action=None):
+    if action == None:
+        action = print
     if runTime == '00:00':
         runTime = '23:59:59:999999'
     startTime = time(*(map(int, runTime.split(':'))))

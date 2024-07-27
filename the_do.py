@@ -15,7 +15,7 @@ else:
 # headless = False #debugging on mac
 
 SCROLL_PAUSE_TIME = 0.00
-PAUSE_TIME = 0.01 # we don't want j's
+PAUSE_TIME = 0.00 # we don't want j's
 
 keywords = ["bitcoin", "btc", 'ethereum', "eth", 'bnb', 'solana', 'xrp', 'dogecoin', 'toncoin', 'cardano', 'shiba_inu', 'avalanche', 'tron', 'polkadot', 'bitcoin_cash', 'chainlink', 'near_protocol',
             'polygon_matic', 'litecoin', 'unus_sed_leo', 'pepe_coin', 'kaspa_coin', 'ethereum_classic', 'etc_coin', 'aptos_apt', 'monero', 'xmr', 'render_rndr', 'hedera_HBAR', 'stellar_XLM', 'cosmos_ATOM_crypto', 'mantle_MNT', 'arbitrum_ARB', 'okb_coin', 
@@ -51,12 +51,10 @@ def execute_sql(sql_statements):
     
     
 def create_table():
-    # also deletes 'the_do'-table
     # set up table with the columns for each keyword + per crypto volume_24h/market_cap, percent_change_1h, percent_change_24h, percent_change_7d, percent_change_30d (https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest)
     
     for interval in ["reddit_2hr", "reddit_12hr", "reddit_3d", "reddit_7d", "reddit_mo"]:
         sql_statements = [ 
-            f"""DROP TABLE IF EXISTS {interval};""",
             f"""CREATE TABLE {interval} (
                     id TEXT PRIMARY KEY);"""]
         execute_sql(sql_statements)
@@ -75,7 +73,6 @@ def create_table():
     sql_statements = []
     
     sql_statements = [ 
-        """DROP TABLE IF EXISTS cmc_data;""",
         """CREATE TABLE cmc_data (
                 id TEXT
         );"""]
