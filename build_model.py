@@ -6,7 +6,7 @@ import numpy as np
 
 
 
-negative_slopes = np.full(11, 0.1)
+negative_slopes = np.full(11, 0.5)
 
 def set_leakies():
     global negative_slopes
@@ -55,15 +55,15 @@ def set_leakies():
     def custom_leaky_10(x):
         return keras.activations.leaky_relu(x, negative_slope=negative_slopes[10])
 
-def set_slopes_1(value = -1):
+def set_slopes_1(offset = 0, value = -1):
     global negative_slopes
     for sl in negative_slopes:
         if value > 0:
             sl = value
-        sl = sl + np.random.normal(0, 0.04)
+        sl = sl+offset + np.random.normal(0, 0.04)
         sl = max(0, sl)
         
-set_slopes_1()
+# set_slopes_1()
 set_leakies()
 
 def unison_shuffled_copies(a, b):
@@ -72,7 +72,52 @@ def unison_shuffled_copies(a, b):
     return (a[p], b[p])
 
 def build_model(model_head = "bitcoin"):
-    pass
+    
+    inputs = keras.Input(shape=(20000,))
+    
+    x_1 = keras.layers.Dense(128, activation=custom_leaky_1)(inputs)
+    x_2 = keras.layers.Dense(128, activation=custom_leaky_2)(inputs)
+    x_3 = keras.layers.Dense(128, activation=custom_leaky_3)(inputs)
+    x_4 = keras.layers.Dense(128, activation=custom_leaky_4)(inputs)
+    x_5 = keras.layers.Dense(128, activation=custom_leaky_5)(inputs)
+    x_6 = keras.layers.Dense(128, activation=custom_leaky_6)(inputs)
+    x_7 = keras.layers.Dense(128, activation=custom_leaky_7)(inputs)
+    x_8 = keras.layers.Dense(128, activation=custom_leaky_8)(inputs)
+    
+    x_1 = keras.layers.Dense(64, activation=custom_leaky_8)(x_1)
+    x_2 = keras.layers.Dense(64, activation=custom_leaky_7)(x_2)
+    x_3 = keras.layers.Dense(64, activation=custom_leaky_6)(x_3)
+    x_4 = keras.layers.Dense(64, activation=custom_leaky_5)(x_4)
+    x_5 = keras.layers.Dense(64, activation=custom_leaky_4)(x_5)
+    x_6 = keras.layers.Dense(64, activation=custom_leaky_3)(x_6)
+    x_7 = keras.layers.Dense(64, activation=custom_leaky_2)(x_7)
+    x_8 = keras.layers.Dense(64, activation=custom_leaky_1)(x_8)
+    
+    x_1 = keras.layers.Add([x_1, x_5])
+    x_2 = keras.layers.Add([x_2, x_6])
+    x_3 = keras.layers.Add([x_3, x_7])
+    x_4 = keras.layers.Add([x_4, x_8])
+    
+    x_1 = keras.layers.Dense(64, activation=custom_leaky_9)(x_1)
+    x_2 = keras.layers.Dense(64, activation=custom_leaky_10)(x_2)
+    x_3 = keras.layers.Dense(64, activation=custom_leaky)(x_3)
+    x_4 = keras.layers.Dense(64, activation=custom_leaky_1)(x_4)
+    
+    x_1 = keras.layers.Add([x_1, x_3])
+    x_2 = keras.layers.Add([x_2, x_4])
+    
+    x_1 = keras.layers.Dense(64, activation=custom_leaky_9)(x_1)
+    x_2 = keras.layers.Dense(64, activation=custom_leaky_10)(x_2)
+    
+    x_1 = keras.layers.Add([x_1, x_2])
+    
+    x_1 = keras.layers.Dense(64, activation=custom_leaky_9)(x_1)
+    
+    x_1 = keras.layers.Dropout(0.75)(x_1)
+    
+    outputs = keras.layers.Dense(5, activation="softmax")(x_1)
+    model = keras.Model(inputs=inputs, outputs=outputs)
+    return model
 
 class CustomCallback(keras.callbacks.Callback):
 
