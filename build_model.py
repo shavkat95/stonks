@@ -93,25 +93,48 @@ def build_model(model_head = "bitcoin"):
     x_7 = keras.layers.Dense(64, activation=custom_leaky_2)(x_7)
     x_8 = keras.layers.Dense(64, activation=custom_leaky_1)(x_8)
     
-    x_1 = keras.layers.Add([x_1, x_5])
-    x_2 = keras.layers.Add([x_2, x_6])
+    x_1_1 = keras.layers.Dense(64, activation=custom_leaky_8)(inputs)
+    x_2_1 = keras.layers.Dense(64, activation=custom_leaky_7)(inputs)
+    x_3_1 = keras.layers.Dense(64, activation=custom_leaky_6)(inputs)
+    x_4_1 = keras.layers.Dense(64, activation=custom_leaky_5)(inputs)
+    
+    x_5_1 = keras.layers.Add([x_1, x_5])
+    x_6_1 = keras.layers.Add([x_2, x_6])
     x_3 = keras.layers.Add([x_3, x_7])
     x_4 = keras.layers.Add([x_4, x_8])
+    
+    x_1 = keras.layers.Concatenate([x_5_1, x_1_1])
+    x_2 = keras.layers.Concatenate([x_6_1, x_2_1])
+    x_3 = keras.layers.Concatenate([x_3, x_3_1])
+    x_4 = keras.layers.Concatenate([x_4, x_4_1])
     
     x_1 = keras.layers.Dense(64, activation=custom_leaky_9)(x_1)
     x_2 = keras.layers.Dense(64, activation=custom_leaky_10)(x_2)
     x_3 = keras.layers.Dense(64, activation=custom_leaky)(x_3)
     x_4 = keras.layers.Dense(64, activation=custom_leaky_1)(x_4)
     
-    x_1 = keras.layers.Add([x_1, x_3])
-    x_2 = keras.layers.Add([x_2, x_4])
+    x_7_1 = keras.layers.Add([x_1, x_3])
+    x_8_1 = keras.layers.Add([x_2, x_4])
+    
+    x_1 = keras.layers.Concatenate([x_7_1, x_5_1])
+    x_2 = keras.layers.Concatenate([x_8_1, x_6_1])
     
     x_1 = keras.layers.Dense(64, activation=custom_leaky_9)(x_1)
     x_2 = keras.layers.Dense(64, activation=custom_leaky_10)(x_2)
     
-    x_1 = keras.layers.Add([x_1, x_2])
+    x_9_1 = keras.layers.Add([x_1, x_2])
+    
+    x_1 = keras.layers.Concatenate([x_7_1, x_9_1])
     
     x_1 = keras.layers.Dense(64, activation=custom_leaky_9)(x_1)
+    
+    x_1 = keras.layers.Concatenate([x_1, x_8_1])
+    
+    x_1 = keras.layers.Dense(64, activation=custom_leaky_10)(x_1)
+    
+    x_1 = keras.layers.Concatenate([x_1, x_9_1])
+    
+    x_1 = keras.layers.Dense(64, activation=custom_leaky)(x_1)
     
     x_1 = keras.layers.Dropout(0.75)(x_1)
     

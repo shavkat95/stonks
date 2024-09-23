@@ -2,6 +2,7 @@ my.db
 my.db-journal
 config.py
 output.log
+*.csv
 
 __pycache__/
 heiko/
